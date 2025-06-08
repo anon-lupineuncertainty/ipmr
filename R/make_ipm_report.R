@@ -908,7 +908,7 @@ make_ipm_report_body <- function(proto_ipm,
                          ", ",
                          u_nm, " = ", round(doms[[i]][2], 3),
                          "], ",
-                         "n_{", d_nm, "} = ", doms[[i]][2],
+                         "n_{", d_nm, "} = ", doms[[i]][3],
                          "$\n\n",
                          " where $n_{x}$ denotes the number of meshpoints",
                          " for the midpoint rule for integration.")
