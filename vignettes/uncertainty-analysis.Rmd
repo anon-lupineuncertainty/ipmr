@@ -1,0 +1,202 @@
+---
+title: "Quantifying Parameter Uncertainty with ipmr"
+output:
+  rmarkdown::html_vignette: 
+    toc: yes
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Quantifying Parameter Uncertainty with ipmr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Overview
+
+Integral projection models (IPMs) are commonly used to estimate population growth rates and quantify the demographic importance of different vital rates. However, parameter estimates used to construct IPMs are themselves uncertain, and this uncertainty propagates into model predictions. The `uncertainty()` function estimates how uncertainty in individual parameters contributes to uncertainty in the population growth rate (λ) using finite-difference sensitivities and the covariance structure of sampled parameter estimates.  
+
+This vignette demonstrates how to:  
+- prepare sampled parameter values  
+- perform an uncertainty analysis  
+- interpret the output  
+- visualize parameter and vital rate contributions to uncertainty  
+
+## Quick start guide {#quick}  
+
+To perform an uncertainty analysis with `uncertainty()`, you will need four required inputs and three optional inputs.  
+
+### `ipm`  
+
+An `ipmr` model object returned by `make_ipm()`. Currently, `uncertainty()` supports **simple** and **general**, **d**ensity-**i**ndependent, **det**erministic IPMs. Stochastic and density-dependent IPMs are not currently supported.  
+
+### `pars`  
+
+A character vector giving the names of the parameters to examine in the uncertainty analysis. In most applications, this should include every parameter that varies among the sampled parameter sets.  
+
+If `pars = NULL`, all parameters used by the IPM are included. Parameters that do not vary across samples will simply have zero estimated uncertainty contribution.  
+
+### `samples`  
+
+A dataframe containing sampled parameter values. Each row should represent one complete parameter set (one sampled model), and each column should contain the sampled values of a single model parameter. Column names must exactly match the parameter names used to construct the `ipmr` object.  
+
+Sampled parameter values may be obtained by bootstrap resampling demographic data and refitting the vital rate models, or by drawing from the joint posterior distribution of a Bayesian model. Guidance for preparing these samples is provided in Section @ref(bootstrap).  
+
+All parameters required to construct the IPM must be included in `samples`, even if some parameters are held constant across all sampled models. We recommend using at least 1,000 sampled parameter sets to obtain stable estimates of parameter uncertainty.  
+
+### `kernels`  
+
+A character vector specifying the subkernel structure of the `ipmr` object. The kernel names must match those used to construct the `ipmr` object and must be supplied in row-major order.  
+
+### `vr_table` (optional)  
+
+An optional dataframe mapping each parameter to the vital rate to which it corresponds. This table is used to summarize parameter uncertainty contributions by vital rate and to support downstream visualization with the `plot()` function. If omitted, uncertainty contributions are only reported at the parameter level.  Calling `uncertainty(ipm, vr_table = "template")` generates a template dataframe that can be manually filled in for all parameters in the IPM. 
+
+### `delta` (optional)  
+
+A numeric scalar specifying the the perturbation size used for numerical differentiation when calculating parameter sensitivities. The default is `delta = 1e-4`. For some model constructions, selecting a delta value greater than the absolute value of the smallest parameter value may result in invalid subkernels. Care should be taken to select a sufficiently small value for delta such that adding or subtracting this value from all sampled parameter values does not change the sign on the parameter.  
+
+### `cores` (optional)  
+
+The number of processor cores to use during the analysis. The default (`cores = 1`) performs the analysis sequentially. For larger IPMs or many sampled parameter sets, parallel execution can substantially reduce computation time.  
+
+We recommend using
+
+```{r}
+parallelly::availableCores(omit = 1)
+```
+
+to determine the number of available cores while leaving one core free for other system processes.  
+
+Once these objects have been prepared, the uncertainty analysis can be performed with a single function call:
+
+```{r}
+unc <- uncertainty(
+  ipm = ipm,
+  samples = samples,
+  pars = pars,
+  kernels = kernels,
+  vr_table = vr_table,
+  cores = parallelly::availableCores(omit = 1)
+)
+```
+
+The resulting object contains the sampled population growth rates, estimates of total model uncertainty, and summaries of uncertainty contributions at both the parameter and (optionally) vital rate levels.  
+
+## Understanding the output {#output}  
+
+`uncertainty()` returns a list containing the original IPM, the sampled population growth rates, and summaries of uncertainty at both the parameter and vital rate levels. 
+
+### `ipm`  
+
+The original IPM object supplied to `uncertainty()`. This is returned unchanged for convenience and reproducibility.  
+
+### `lambdas`  
+
+A numeric vector containing the population growth rates (λ) calculated from each of the sampled parameter sets. The variance of this vector represents the estimated overall model uncertainty.  
+
+### `mod_uncert`  
+
+A single numeric value giving the estimated model uncertainty, calculated as the variance of the sampled λ values (`var(lambdas))`).  
+
+### `params_uncert` 
+
+A dataframe summarizing parameter-level uncertainty. Each row corresponds to a single model parameter and includes:  
+- the mean sensitivity and elasticity across all sampled models
+- the variance, standard error, and coefficient of variation of the sampled parameter values
+- the estimated contribution of the parameter to the uncertainty in λ
+- the proportion of total model uncertainty explained by the parameter
+- the vital rate the parameter corresponds to (if provided)
+
+The parameter uncertainty contributions are calculated by combining the parameter covariance matrix with the average sensitivities estimated across the sampled models.  
+
+### `vr_uncert`  
+
+If a `vr_table` is supplied, `vr_uncert` summarizes parameter uncertainty contributions by vital rate. Parameter contributions are summed within each vital rate, allowing users to identify which demographic processes contribute most to uncertainty in the population growth rate. If `vr_table` is omitted, this element contains `NA`.  
+
+## Obtaining sampled parameter values {#bootstrap}  
+
+The `samples` argument should contain a representative sample from the joint distribution of the model parameters. Because `uncertainty()` combines parameter sensitivities with the covariance structure of the sampled parameter values, it is important that correlations among parameters are preserved.  
+
+Sampled parameter values may be obtained using either Bayesian or frequentist methods.  
+
+### Bayesian models  
+
+When vital rate models are fit within a Bayesian framework, sampled parameter values can be obtained directly by drawing from the joint posterior distribution. Each posterior draw represents one complete parameter set and can be supplied directly to `uncertainty()` after arranging the draws into a dataframe whose column names match the parameter names used in the IPM.  
+
+### Bootstrap resampling  
+
+For models fit using maximum likelihood or other frequentist methods, we recommend generating sampled parameter values using bootstrap resampling. Briefly, bootstrap resampling repeatedly samples the original demographic data with replacement, refits each vital rate model to the resampled data, and stores the resulting parameter estimates. Repeating this procedure produces a distribution of parameter values while preserving the covariance structure among parameters estimated from the same resampled dataset.  
+
+Although the exact implementation will depend on the study design and modelling framework, the following recommendations will help produce sampled parameter values that are compatible with `uncertainty()`. 
+
+#### Keep constants fixed across bootstrap samples  
+
+Some quantities used to construct an IPM, such as the lower and upper integration limits (`L` and `U`), are determinated by the observed range of the original dataset rather than estimated by a statistical model. These quantities should generally be held constant across bootstrap samples.  
+
+Recalculating such values for every bootstrap replicate may produce artificial variability arising from differences in the sampled observations rather than genuine uncertainty in the demographic process.  
+
+#### Use a consistent model structure  
+
+If model selection is performed before constructing the IPM, it should be performed only once using the original dataset. The selected model structure should then be refit to every bootstrap sample.  
+
+Allowing the model structure to change among bootstrap replicates introduces model selection uncertainty in addition to parameter uncertainty. Because `uncertainty()` is designed to quantify parameter uncertainty, all sampled parameter sets should be generated from the same underlying model structure.  
+
+#### Consider the sampling design   
+
+Bootstrap resampling should reflect the biological and statistical structure of the original study whenever possible/ Depending on the study design, it may be appropriate to stratify sampling by factors such as year, site, or experimental block so that each bootstrap replicate preserves important features of the data. However, it is important to consider the tradeoff between stratification structure and the resulting sample size of each resampled stratified unit.  
+
+The appropriate resampling strategy depends on the size and structure of the dataset, and no single approach is appropriate for all applications. Users should select a strategy that is consistent with the assumptions of their demographic models and the biological processes being studied. 
+
+#### Take caution when independently resampling multiple datasets  
+
+Integral projection models frequently combine information from multiple demographic datasets. For example, survival, growth, and reproduction may be estimated from a long-term monitoring study, while fecundity or recruitment may be estimated from a separate, one-off experiment.  
+
+When these datasets are bootstrapped independently, parameter covariances between demographic processes cannot be accurately estimated because each dataset is resampled separately. Consequently, the covariance terms used in the uncertainty analysis may not reflect biologically-relevant covariance between these terms, or the true covariance may be much higher than estimated, and the resulting uncertainty contributions must be interpreted with caution.  
+
+This limitation is not unique to `uncertainty()` but reflects the information available in the sampled parameter values. Whenever possible, uncertainty analyses should therefore be based on parameter samples generated from a single integrated dataset or from a modelling framework that estimates the full joint parameter distribution. 
+
+
+## Plotting the results {#viz}
+
+The output of `uncertainty()` can be passed directly to `plot()` to visualize the estimated contributions of parameters or vital rates to model uncertainty using `ggplot2`.  
+
+By default, `plot()` returns a list containing all available visualizations. Individual plots may also be specified using the `type` argument. `type = "vr"` and `type = "stacked"` are only available if `vr_table` is specified. 
+
+### Parameter-level uncertainty  
+
+```{r, eval = F, echo = T}
+plot(uncert_out, type = "param")
+```
+
+The parameter-level plot summarizes the uncertainty analysis for every parameter specified in the analysis. Three panels are displayed:  
+- **Parameter uncertainty**, represented as the coefficient of variation (CV) of the sampled parameter values  
+- **Model sensitivity**, shown as the mean elasticity of λ to each parameter across all sampled models
+- **Parameter contribution to uncertainty**, showing the estimated proportion of model uncertainty attributable to each parameter  
+
+Parameters are grouped and colored according to the vital rate to which they correspond, when supplied, making it easy to distinguish whether uncertainty arises from variation within a vital rate or differences among vital rates.  
+
+### Vital rate uncertainty  
+
+```{r, eval = F. echo = T}
+plot(uncert_out, type = "vr")
+```
+
+When a `vr_table` is supplied to `uncertainty()`, parameter uncertainty contributions are summed within each vital rate. This plot provides a higher-level summary by showing the total contribution of each demographic process to uncertainty in λ.  
+
+This visualization is useful for identifying which processes of the life cycle contribute most to uncertainty in model projections.  
+
+### Model uncertainty decomposition  
+
+```{r, eval = F, echo = T}
+plot(uncert_out, type = "stacked")
+```
+
+The stacked uncertainty plot summarizes the uncertainty contributions of all vital rates within a single bar. Colored segments represent the uncertainty attributed to each vital rate, while the outlined box indicates the total variance in λ estimated from the sampled models.  
+
+This visualization provides a quick assessment of how much of the total model uncertainty is explained by the parameter uncertainty captured in the analysis.  
+
+### Customizing colors  
+
+By default, the plotting functions use a colorblind-friendly palette to distinguish vital rates. Custom colors can be supplied using the `vr_colors` argument as a named character vector, where the names correspond to the values in the `vital_rate` column of the uncertainty output.  
+
+
+Note: when exporting figures as PDF files using `ggsave()`, use `device = cairo_pdf` to preserve the λ character in the figure text. 
