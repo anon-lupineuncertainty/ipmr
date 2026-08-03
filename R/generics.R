@@ -1018,6 +1018,49 @@ print.ipmr_vital_rate_funs <- function(x, ...) {
 
 }
 
+#' Print method for ipmr uncertainty objects
+#'
+#' @param x An object of class `ipmr_uncertainty`
+#' @param ... Unused
+#'
+#' @return \code{x} invisibly.
+#'
+#' @export
+print.ipmr_uncertainty <- function(x, ...) {
+
+  cat("\n")
+  cat("====================================\n")
+  cat(" ipmr_uncertainty object\n")
+  cat("====================================\n\n")
+
+  ## ---- Basic info
+  cat("Number of parameter samples:", nrow(x$lambdas), "\n")
+  cat("Number of parameters:", nrow(x$params_uncert), "\n\n")
+
+  ## ---- Lambda uncertainty
+  cat("Lambda variance:\n")
+  print(x$mod_uncert)
+  cat("\n")
+
+  ## ---- Parameter-level summary
+  cat("Top contributing parameters (by variance contribution):\n")
+  top <- x$params_uncert[order(-x$params_uncert$variance_prop), ]
+  print(utils::head(top[, c("parameter", "vital_rate", "variance_prop")], 5))
+  cat("\n")
+
+  ## ---- Vital-rate summary
+  if (!is.null(x$vr_uncert)) {
+    cat("Vital-rate contributions:\n")
+    print(x$vr_uncert)
+    cat("\n")
+  }
+
+  cat("Use `plot()` to visualize uncertainty decomposition.\n")
+  cat("====================================\n")
+
+  invisible(x)
+}
+
 # Lambda------------
 #' @title Compute the per-capita growth rate for an IPM object
 #' @rdname lambda
@@ -1878,6 +1921,83 @@ plot.general_di_det_ipm <- function(x = NULL, y = NULL,
 
   return(out)
 
+}
+
+#' Plot method for ipmr uncertainty objects
+#'
+#' @param x An object of class `ipmr_uncertainty`
+#' @param type Type of plot:
+#'   \itemize{
+#'     \item "param" - parameter-level 3-panel plot
+#'     \item "vr" - vital-rate aggregated contributions
+#'     \item "stacked" - stacked contributions vs lambda variance
+#'     \item "all" - returns all plots as a list
+#'   }
+#' @param vr_colors A named character vector of colors used to represent
+#'   vital rate categories in plots. Names must match the values in the
+#'   \code{vital_rate} column of the uncertainty output. If \code{NULL},
+#'   a default colorblind-friendly palette is used.
+#' @param ... Additional arguments passed to plotting functions
+#'
+#' @return A \code{ggplot} object or a list of plots.
+#'
+#' @export
+plot.ipmr_uncertainty <- function(x,
+                                  type = c("all", "param", "vr", "stacked"),
+                                  vr_colors = NULL,
+                                  ...) {
+
+  type <- match.arg(type)
+
+  if (!inherits(x, "ipmr_uncertainty")) {
+    stop("`x` must be an object of class 'ipmr_uncertainty'.")
+  }
+
+  default_cols <- c(
+    "#D0873C", # soft orange
+    "#8FB339", # olive green
+    "#7A5195", # muted purple
+    "#88CCEE", # light blue
+    "#332288", # deep blue
+    "#44AA99", # teal
+    "#882255", # dark red
+    "#DDCC77", # sand
+    "#C94C4C", # muted red
+    "#6C757D"  # grey
+  )
+
+  vr_levels <- unique(x$params_uncert$vital_rate)
+
+  if (is.null(vr_colors)) {
+    vr_colors <- setNames(
+      rep(default_cols, length.out = length(vr_levels)),
+      vr_levels
+    )
+  } else {
+    if (is.null(names(vr_colors))) {
+      stop("`vr_colors` must be a named vector with names matching vital rates.")
+    }
+
+    missing_cols <- setdiff(vr_levels, names(vr_colors))
+    if (length(missing_cols) > 0) {
+      stop("Missing colors for vital rates: ",
+           paste(missing_cols, collapse = ", "))
+    }
+  }
+
+  # Route to internal plotting helpers
+  plots <- list(
+    param   = .plot_uncert_param(x, vr_colors = vr_colors, ...),
+    vr      = .plot_uncert_vr(x, vr_colors = vr_colors, ...),
+    stacked = .plot_uncert_stacked(x, vr_colors = vr_colors, ...)
+  )
+
+  switch(type,
+         param   = plots$param,
+         vr      = plots$vr,
+         stacked = plots$stacked,
+         all     = plots
+  )
 }
 
 # right_ev ----------------
