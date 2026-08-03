@@ -59,6 +59,36 @@ validate_ipm_base <- function(ipm) {
   )
 }
 
+#' Warn if finite-difference perturbation may change parameter sign
+#'
+#' Internal helper used by sensitivity and uncertainty validation.
+#'
+#' @param par_names Character vector of parameter names.
+#' @param par_values Numeric vector of parameter values corresponding to
+#'   `par_names`.
+#' @param delta Finite-difference perturbation size.
+#'
+#' @noRd
+warn_delta_crossing <- function(par_names, par_values = NULL, delta) {
+
+  if (!is.null(par_values)) {
+    par_names <- unique(par_names[abs(par_values) <= delta])
+  }
+
+  if (length(par_names) > 0) {
+    warning(
+      "The following parameter(s) are within `delta` of zero and may change ",
+      "sign during perturbation: ",
+      paste(par_names, collapse = ", "),
+      ". This may result in failed or invalid subkernel construction or failed ",
+      "sensitivity/uncertainty calculations."
+    )
+  }
+
+  invisible(NULL)
+}
+
+
 
 #' Validate inputs to sensitivity function
 #'
@@ -151,6 +181,14 @@ validate_ipm_sensitivity <- function(ipm, pars, kernels, delta) {
   if (delta <= 0) {
     stop("`delta` must be > 0.")
   }
+
+  ## ---- check if delta changes sign on any parameters
+
+  warn_delta_crossing(
+    par_names = pars,
+    par_values = pars_all[pars],
+    delta = delta
+  )
 
   ## return cleaned objects for main function
   list(
@@ -301,6 +339,19 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     stop("`delta` must be a single numeric value > 0.")
   }
 
+  ## ---- check if delta changes sign on any parameters
+  problem_pars <- pars[
+    vapply(
+      pars,
+      function(p) any(abs(samples[[p]]) <= delta),
+      logical(1)
+    )
+  ]
+
+  warn_delta_crossing(
+    par_names = problem_pars,
+    delta = delta
+  )
 
   ## ---- cores
   if (!is.numeric(cores) || length(cores) != 1 || cores < 1) {
