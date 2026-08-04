@@ -58,6 +58,10 @@
 #' # Run uncertainty analysis
 #' # out <- uncertainty(ipm, pars, samples, kernels, vr_table = vr)
 #'
+#' @importFrom dplyr bind_rows left_join rename group_by summarize join_by
+#' @importFrom stats var sd cov
+#' @importFrom reshape2 melt
+#'
 #' @export
 uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
                         delta = 1e-4, cores = 1) {
@@ -210,8 +214,8 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
   cov_long$variance_part <- cov_long$covariance * cov_long$sens1 * cov_long$sens2
 
   var_cont <- cov_long |>
-    dplyr::group_by(par1) |>
-    dplyr::summarize(variance_sum = sum(variance_part), .groups = "drop")
+    dplyr::group_by(.data$par1) |>
+    dplyr::summarize(variance_sum = sum(.data$variance_part), .groups = "drop")
 
   var_cont$variance_prop <- var_cont$variance_sum / var_lambda
 
@@ -223,9 +227,9 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
 
   ## ---- Add summary by vital rates
   vr_uncert <- stats_temp %>%
-    dplyr::group_by(vital_rate) %>%
-    dplyr::summarise(
-      variance_sum = sum(variance_sum, na.rm = TRUE),
+    dplyr::group_by(.data$vital_rate) %>%
+    dplyr::summarize(
+      variance_sum = sum(.data$variance_sum, na.rm = TRUE),
       .groups = "drop"
     )
 

@@ -396,6 +396,10 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
 #' Plot three-panel uncertainty plot
 #'
 #' @noRd
+#' @importFrom patchwork plot_layout
+#' @importFrom ggplot2 theme_minimal theme element_text margin aes ggplot
+#'  geom_vline geom_point geom_segment labs scale_color_manual
+#' @importFrom stringr str_wrap
 .plot_uncert_param <- function(x, vr_colors, ...) {
 
   df <- x$params_uncert
@@ -422,7 +426,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
                                        yend = .data$parameter), linewidth = 1) +
     ggplot2::labs(x = "Coefficient of variation",
                   y = "Parameter",
-                  title = ggplot2::title_wrap("Parameter uncertainty")) +
+                  title = title_wrap("Parameter uncertainty")) +
     ggplot2::scale_color_manual(values = vr_colors, guide = "none") +
     base_theme
 
@@ -457,6 +461,8 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
 #' Plot uncertainty aggregated by vital rate
 #'
 #' @noRd
+#' @importFrom ggplot2 ggplot aes geom_col labs scale_fill_manual theme_minimal
+#'  guides
 .plot_uncert_vr <- function(x, vr_colors, ...) {
 
   df <- x$vr_uncert
@@ -479,6 +485,8 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
 #' Plot model uncertainty and vital rate uncertainty contributions
 #'
 #' @noRd
+#' @importFrom ggplot2 ggplot aes geom_col geom_rect labs scale_fill_manual
+#'  scale_color_manual guides guide_legend theme theme_minimal element_blank
 .plot_uncert_stacked <- function(x, vr_colors, ...) {
 
   df <- x$vr_uncert
