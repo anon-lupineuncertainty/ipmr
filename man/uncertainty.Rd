@@ -70,7 +70,7 @@ of concurrent jobs.
 }
 \examples{
 # Generate a template for defining vital rates
-vr <- uncertainty(ipm, vr_table = "template")
+# vr <- uncertainty(ipm, vr_table = "template")
 
 # Fill in the vital_rate column manually, then run:
 # vr$vital_rate <- c("survival", "growth", "reproduction", ...)
