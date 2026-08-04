@@ -186,7 +186,7 @@ validate_ipm_sensitivity <- function(ipm, pars, kernels, delta) {
 
   warn_delta_crossing(
     par_names = pars,
-    par_values = pars_all[pars],
+    par_values = as.numeric(pars_all[pars]),
     delta = delta
   )
 
