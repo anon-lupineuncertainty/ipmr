@@ -69,7 +69,12 @@ Imports:
     rlang (>= 0.3.0),
     stats,
     utils,
-    Rcpp
+    Rcpp,
+    dplyr,
+    ggplot2,
+    patchwork,
+    reshape2,
+    stringr
 Depends: R (>= 3.4)
 Config/testthat/parallel: true
 Config/testthat/edition: 3
