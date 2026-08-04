@@ -1,0 +1,9 @@
+utils::globalVariables(
+  c(
+    "par1",
+    "parameter",
+    "variance_part",
+    "variance_sum",
+    "vital_rate"
+  )
+)
