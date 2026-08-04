@@ -220,7 +220,7 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
   var_cont$variance_prop <- var_cont$variance_sum / var_lambda
 
   stats_temp <- dplyr::left_join(stats_temp, var_cont,
-                                 by = dplyr::join_by(parameter == par1))
+                                 by = c("parameter" == "par1"))
 
   ## ---- Add vital rates
   stats_temp <- dplyr::left_join(stats_temp, vr_table, by = "parameter")
