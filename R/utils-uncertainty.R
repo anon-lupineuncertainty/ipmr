@@ -406,49 +406,52 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     levels = rev(df$parameter[order(df$vital_rate)])
   )
 
-  library(ggplot2)
-  library(patchwork)
-
-  base_theme <- theme_minimal() +
-    theme(
-      plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
-      plot.margin = margin(5.5, 10, 5.5, 5.5)
+  base_theme <- ggplot2::theme_minimal() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(size = 10, face = "bold", hjust = 0.5),
+      plot.margin = ggplot2::margin(5.5, 10, 5.5, 5.5)
     )
 
   title_wrap <- function(x) str_wrap(x, width = 28)
 
-  p1 <- ggplot(df, aes(x = cv, y = parameter, color = vital_rate)) +
-    geom_vline(xintercept = 0) +
-    geom_point(size = 2.5) +
-    geom_segment(aes(x = 0, xend = cv, yend = parameter), linewidth = 1) +
-    labs(x = "Coefficient of variation",
-         y = "Parameter",
-         title = title_wrap("Parameter uncertainty")) +
-    scale_color_manual(values = vr_colors, guide = "none") +
+  p1 <- ggplot2::ggplot(df, ggplot2::aes(x = cv, y = parameter,
+                                         color = vital_rate)) +
+    ggplot2::geom_vline(xintercept = 0) +
+    ggplot2::geom_point(size = 2.5) +
+    ggplot2::geom_segment(ggplot2::aes(x = 0, xend = cv, yend = parameter),
+                          linewidth = 1) +
+    ggplot2::labs(x = "Coefficient of variation",
+                  y = "Parameter",
+                  title = ggplot2::title_wrap("Parameter uncertainty")) +
+    ggplot2::scale_color_manual(values = vr_colors, guide = "none") +
     base_theme
 
-  p2 <- ggplot(df, aes(x = elasticity, y = parameter, color = vital_rate)) +
-    geom_vline(xintercept = 0) +
-    geom_point(size = 2.5) +
-    geom_segment(aes(x = 0, xend = elasticity, yend = parameter), linewidth = 1) +
-    labs(x = "Elasticity",
-         y = NULL,
-         title = title_wrap("Model sensitivity to parameter")) +
-    scale_color_manual(values = vr_colors, guide = "none") +
+  p2 <- ggplot2::ggplot(df, ggplot2::aes(x = elasticity, y = parameter,
+                                         color = vital_rate)) +
+    ggplot2::geom_vline(xintercept = 0) +
+    ggplot2::geom_point(size = 2.5) +
+    ggplot2::geom_segment(ggplot2::aes(x = 0, xend = elasticity,
+                                       yend = parameter), linewidth = 1) +
+    ggplot2::labs(x = "Elasticity",
+                  y = NULL,
+                  title = title_wrap("Model sensitivity to parameter")) +
+    ggplot2::scale_color_manual(values = vr_colors, guide = "none") +
     base_theme
 
-  p3 <- ggplot(df, aes(x = variance_prop, y = parameter, color = vital_rate)) +
-    geom_vline(xintercept = 0) +
-    geom_point(size = 2.5) +
-    geom_segment(aes(x = 0, xend = variance_prop, yend = parameter), linewidth = 1) +
-    labs(x = "Uncertainty contribution",
-         y = NULL,
-         title = title_wrap("Parameter contribution to uncertainty in \u03BB"),
-         color = "Vital rate") +
-    scale_color_manual(values = vr_colors) +
+  p3 <- ggplot2::ggplot(df, ggplot2::aes(x = variance_prop, y = parameter,
+                                         color = vital_rate)) +
+    ggplot2::geom_vline(xintercept = 0) +
+    ggplot2::geom_point(size = 2.5) +
+    ggplot2::geom_segment(ggplot2::aes(x = 0, xend = variance_prop,
+                                       yend = parameter), linewidth = 1) +
+    ggplot2::labs(x = "Uncertainty contribution",
+                  y = NULL,
+                  title = title_wrap("Parameter contribution to uncertainty in \u03BB"),
+                  color = "Vital rate") +
+    ggplot2::scale_color_manual(values = vr_colors) +
     base_theme
 
-  p1 + p2 + p3 + plot_layout(ncol = 3, axes = 'collect_y')
+  p1 + p2 + p3 + patchwork::plot_layout(ncol = 3, axes = 'collect_y')
 }
 
 #' Plot uncertainty aggregated by vital rate
@@ -463,17 +466,14 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     levels = df$vital_rate[order(df$variance_sum)]
   )
 
-  library(ggplot2)
-
-  ggplot(df, aes(x = variance_sum, y = vital_rate, fill = vital_rate)) +
-    geom_col() +
-    labs(
-      x = "Total uncertainty contribution",
-      y = "Vital rate"
-    ) +
-    scale_fill_manual(values = vr_colors) +
-    theme_minimal() +
-    guides(fill = "none")
+  ggplot2::ggplot(df, ggplot2::aes(x = variance_sum, y = vital_rate,
+                                   fill = vital_rate)) +
+    ggplot2::geom_col() +
+    ggplot2::labs( x = "Total uncertainty contribution",
+                   y = "Vital rate" ) +
+    ggplot2::scale_fill_manual(values = vr_colors) +
+    ggplot2::theme_minimal() +
+    ggplot2::guides(fill = "none")
 }
 
 #' Plot model uncertainty and vital rate uncertainty contributions
@@ -485,48 +485,32 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
 
   total_var <- x$mod_uncert
 
-  library(ggplot2)
 
-  p <- ggplot(df, aes(x = 1, y = variance_sum, fill = vital_rate)) +
-    geom_col(width = 0.6) +
-
+  p <- ggplot2::ggplot(df, ggplot2::aes(x = 1, y = variance_sum,
+                                        fill = vital_rate)) +
+    ggplot2::geom_col(width = 0.6) +
     # Outline box for total lambda variance
-    geom_rect(
-      aes(
-        xmin = 0.7,
-        xmax = 1.3,
-        ymin = 0,
-        ymax = total_var,
-        color = "Total variance in \u03BB"
-      ),
+    ggplot2::geom_rect(
+      ggplot2::aes( xmin = 0.7,
+                    xmax = 1.3,
+                    ymin = 0,
+                    ymax = total_var,
+                    color = "Total variance in \u03BB"),
       inherit.aes = FALSE,
       fill = NA,
-      linewidth = 1
-    ) +
-
-    labs(
-      x = NULL,
-      y = "Variance in \u03BB",
-      title = "Uncertainty decomposition by vital rate",
-      fill = "Vital rate"
-    ) +
-
-    scale_fill_manual(values = vr_colors) +
-    scale_color_manual(
-      name = NULL,
-      values = c("Total variance in \u03BB" = "black")
-    ) +
-
-    guides(
-      fill = guide_legend(order = 1),
-      color = guide_legend(order = 2)
-    ) +
-
-    theme_minimal() +
-    theme(
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank()
-    )
+      linewidth = 1 ) +
+    ggplot2::labs( x = NULL,
+                   y = "Variance in \u03BB",
+                   title = "Uncertainty decomposition by vital rate",
+                   fill = "Vital rate" ) +
+    ggplot2::scale_fill_manual(values = vr_colors) +
+    ggplot2::scale_color_manual( name = NULL,
+                                 values = c("Total variance in \u03BB" = "black") ) +
+    ggplot2::guides( fill = ggplot2::guide_legend(order = 1),
+                     color = guide_legend(order = 2) ) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme( axis.text.x = ggplot2::element_blank(),
+                    axis.ticks.x = ggplot2::element_blank() )
 
   p
 }

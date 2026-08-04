@@ -170,7 +170,7 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
   sens_sam <- dplyr::bind_rows(lapply(main, `[[`, "sens"))
   elas_sam <- dplyr::bind_rows(lapply(main, `[[`, "elas"))
 
-  var_lambda <- var(lam_sam$lambda)
+  var_lambda <- stats::var(lam_sam$lambda)
 
   ## ---- Summary stats
   stats_temp <- data.frame(
@@ -186,13 +186,13 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
 
   for (i in seq_len(npar)) {
     dat_temp <- samples[, par_idx[i]]
-    stats_temp[i, "variance"] <- var(dat_temp)
-    stats_temp[i, "se"] <- sd(dat_temp) / sqrt(length(dat_temp))
-    stats_temp[i, "cv"] <- sd(dat_temp) / mean(dat_temp) * 100
+    stats_temp[i, "variance"] <- stats::var(dat_temp)
+    stats_temp[i, "se"] <- stats::sd(dat_temp) / sqrt(length(dat_temp))
+    stats_temp[i, "cv"] <- stats::sd(dat_temp) / mean(dat_temp) * 100
   }
 
   ## ---- Covariance contributions
-  cov_temp <- cov(samples[, pars])
+  cov_temp <- stats::cov(samples[, pars])
 
   cov_long <- reshape2::melt(cov_temp)
   colnames(cov_long) <- c("par1", "par2", "covariance")
@@ -200,12 +200,12 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
   sens_lookup <- stats_temp[, c("parameter", "sensitivity")]
 
   cov_long <- cov_long %>%
-    left_join(
-      sens_lookup %>% rename(sens1 = sensitivity),
+    dplyr::left_join(
+      sens_lookup %>% dplyr::rename(sens1 = sensitivity),
       by = c("par1" = "parameter")
     ) %>%
-    left_join(
-      sens_lookup %>% rename(sens2 = sensitivity),
+    dplyr::left_join(
+      sens_lookup %>% dplyr::rename(sens2 = sensitivity),
       by = c("par2" = "parameter")
     )
 
