@@ -507,7 +507,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     ggplot2::scale_color_manual( name = NULL,
                                  values = c("Total variance in lambda" = "black") ) +
     ggplot2::guides( fill = ggplot2::guide_legend(order = 1),
-                     color = guide_legend(order = 2) ) +
+                     color = ggplot2::guide_legend(order = 2) ) +
     ggplot2::theme_minimal() +
     ggplot2::theme( axis.text.x = ggplot2::element_blank(),
                     axis.ticks.x = ggplot2::element_blank() )
