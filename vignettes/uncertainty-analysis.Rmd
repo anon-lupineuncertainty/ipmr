@@ -60,7 +60,7 @@ The number of processor cores to use during the analysis. The default (`cores = 
 
 We recommend using
 
-```{r}
+```{r, eval = F, echo = T}
 parallelly::availableCores(omit = 1)
 ```
 
@@ -68,7 +68,7 @@ to determine the number of available cores while leaving one core free for other
 
 Once these objects have been prepared, the uncertainty analysis can be performed with a single function call:
 
-```{r}
+```{r, eval = F, echo = T}
 unc <- uncertainty(
   ipm = ipm,
   samples = samples,
@@ -176,7 +176,7 @@ Parameters are grouped and colored according to the vital rate to which they cor
 
 ### Vital rate uncertainty  
 
-```{r, eval = F. echo = T}
+```{r, eval = F, echo = T}
 plot(uncert_out, type = "vr")
 ```
 
