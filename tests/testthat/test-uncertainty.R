@@ -332,7 +332,7 @@ test_that("uncertainty sensitivities match sensitivity()", {
 
   expect_equal(
     unc$params_uncert$sensitivity,
-    sens[names(unc$params_uncert$parameter)],
+    sens[unc$params_uncert$parameter],
     tolerance = 1e-6
   )
 })
