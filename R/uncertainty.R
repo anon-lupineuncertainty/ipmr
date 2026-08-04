@@ -49,6 +49,7 @@
 #' @return
 #'
 #' @examples
+#' \dontrun{
 #' # Generate a template for defining vital rates
 #' vr <- uncertainty(ipm, vr_table = "template")
 #'
@@ -57,6 +58,7 @@
 #'
 #' # Run uncertainty analysis
 #' # out <- uncertainty(ipm, pars, samples, kernels, vr_table = vr)
+#' }
 #'
 #' @export
 uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
