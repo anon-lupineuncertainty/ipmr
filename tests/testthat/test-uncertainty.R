@@ -331,8 +331,8 @@ test_that("uncertainty sensitivities match sensitivity()", {
   sens <- sensitivity(ipm, kernels = c("P","F"))$sensitivity
 
   expect_equal(
-    unc$params_uncert$sensitivity,
-    sens[unc$params_uncert$parameter],
+    unname(unc$params_uncert$sensitivity),
+    unname(sens[unc$params_uncert$parameter]),
     tolerance = 1e-6
   )
 })
