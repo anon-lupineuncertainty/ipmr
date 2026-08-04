@@ -256,7 +256,7 @@ test_that("sensitivity rejects density-dependent IPMs", {
 
   expect_error(
     sensitivity(ipm, kernels = c("P", "F")),
-    "This function currently supports density-independent IPMs only."
+    "Only density-independent IPMs are currently supported."
   )
 })
 
@@ -266,7 +266,7 @@ test_that("sensitivity rejects stochastic IPMs", {
 
   expect_error(
     sensitivity(ipm, kernels = c("P", "F")),
-    "This function currently supports deterministic IPMs only."
+    "Only deterministic IPMs are currently supported."
   )
 })
 
