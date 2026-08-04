@@ -495,7 +495,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
                     xmax = 1.3,
                     ymin = 0,
                     ymax = total_var,
-                    color = "Total variance in \u03BB"),
+                    color = "Total variance in lambda"),
       inherit.aes = FALSE,
       fill = NA,
       linewidth = 1 ) +
@@ -505,7 +505,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
                    fill = "Vital rate" ) +
     ggplot2::scale_fill_manual(values = vr_colors) +
     ggplot2::scale_color_manual( name = NULL,
-                                 values = c("Total variance in \u03BB" = "black") ) +
+                                 values = c("Total variance in lambda" = "black") ) +
     ggplot2::guides( fill = ggplot2::guide_legend(order = 1),
                      color = guide_legend(order = 2) ) +
     ggplot2::theme_minimal() +
