@@ -412,7 +412,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
       plot.margin = ggplot2::margin(5.5, 10, 5.5, 5.5)
     )
 
-  title_wrap <- function(x) str_wrap(x, width = 28)
+  title_wrap <- function(x) stringr::str_wrap(x, width = 28)
 
   p1 <- ggplot2::ggplot(df, ggplot2::aes(x = .data$cv, y = .data$parameter,
                                          color = .data$vital_rate)) +
