@@ -130,7 +130,7 @@ Although the exact implementation will depend on the study design and modelling 
 
 #### Keep constants fixed across bootstrap samples  
 
-Some quantities used to construct an IPM, such as the lower and upper integration limits (`L` and `U`), are determinated by the observed range of the original dataset rather than estimated by a statistical model. These quantities should generally be held constant across bootstrap samples.  
+Some quantities used to construct an IPM, such as the lower and upper integration limits (`L` and `U`), are determined by the observed range of the original dataset rather than estimated by a statistical model. These quantities should generally be held constant across bootstrap samples.  
 
 Recalculating such values for every bootstrap replicate may produce artificial variability arising from differences in the sampled observations rather than genuine uncertainty in the demographic process.  
 
