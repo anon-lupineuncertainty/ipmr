@@ -443,7 +443,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     geom_segment(aes(x = 0, xend = variance_prop, yend = parameter), linewidth = 1) +
     labs(x = "Uncertainty contribution",
          y = NULL,
-         title = title_wrap("Parameter contribution to uncertainty in λ"),
+         title = title_wrap("Parameter contribution to uncertainty in \u03BB"),
          color = "Vital rate") +
     scale_color_manual(values = vr_colors) +
     base_theme
@@ -497,7 +497,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
         xmax = 1.3,
         ymin = 0,
         ymax = total_var,
-        color = "Total variance in λ"
+        color = "Total variance in \u03BB"
       ),
       inherit.aes = FALSE,
       fill = NA,
@@ -506,7 +506,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
 
     labs(
       x = NULL,
-      y = "Variance in λ",
+      y = "Variance in \u03BB",
       title = "Uncertainty decomposition by vital rate",
       fill = "Vital rate"
     ) +
@@ -514,7 +514,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     scale_fill_manual(values = vr_colors) +
     scale_color_manual(
       name = NULL,
-      values = c("Total variance in λ" = "black")
+      values = c("Total variance in \u03BB" = "black")
     ) +
 
     guides(
