@@ -295,10 +295,12 @@ test_that("uncertainty rejects non-list bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       vr_table = vr,
       bounds = c(0, 1)
@@ -313,10 +315,12 @@ test_that("uncertainty rejects unnamed bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(c(0, 1)),
       vr_table = vr
@@ -331,10 +335,12 @@ test_that("uncertainty rejects unknown parameter names in bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         fake_parameter = c(0, 1)
@@ -351,10 +357,12 @@ test_that("uncertainty rejects bounds of incorrect length 1", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(0)
@@ -371,10 +379,12 @@ test_that("uncertainty rejects bounds of incorrect length 3", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(0, 1, 2)
@@ -391,10 +401,12 @@ test_that("uncertainty rejects non-numeric bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         s_int = c("a", "b")
@@ -411,10 +423,12 @@ test_that("uncertainty rejects missing values in bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(NA, 1)
@@ -431,10 +445,12 @@ test_that("uncertainty rejects reversed bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(1, 0)
@@ -451,10 +467,12 @@ test_that("uncertainty rejects parameter values outside supplied bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_error(
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(10, 20)
@@ -471,11 +489,13 @@ test_that("uncertainty accepts infinite bounds", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   expect_no_error(
 
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(-Inf, Inf),
@@ -493,6 +513,7 @@ test_that("uncertainty warns when delta exceeds feasible region", {
   ipm <- make_test_ipm("simple_di_det")
   vr <- uncertainty(ipm, vr_table = "template")
   vr$vital_rate <- "test"
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 50)))
 
   pars <- parameters(ipm)
 
@@ -500,6 +521,7 @@ test_that("uncertainty warns when delta exceeds feasible region", {
 
     uncertainty(
       ipm,
+      samples = samples,
       kernels = c("P", "F"),
       delta = 100,
       bounds = list(
