@@ -293,11 +293,14 @@ test_that("uncertainty respects parameter subset", {
 test_that("uncertainty rejects non-list bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
       ipm,
       kernels = c("P", "F"),
+      vr_table = vr,
       bounds = c(0, 1)
     ),
     "`bounds` must be NULL or a named list"
@@ -308,12 +311,15 @@ test_that("uncertainty rejects non-list bounds", {
 test_that("uncertainty rejects unnamed bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
       ipm,
       kernels = c("P", "F"),
-      bounds = list(c(0, 1))
+      bounds = list(c(0, 1)),
+      vr_table = vr
     ),
     "must be a named list"
   )
@@ -323,6 +329,8 @@ test_that("uncertainty rejects unnamed bounds", {
 test_that("uncertainty rejects unknown parameter names in bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
@@ -330,7 +338,8 @@ test_that("uncertainty rejects unknown parameter names in bounds", {
       kernels = c("P", "F"),
       bounds = list(
         fake_parameter = c(0, 1)
-      )
+      ),
+      vr_table = vr
     ),
     "Unknown parameter"
   )
@@ -340,6 +349,8 @@ test_that("uncertainty rejects unknown parameter names in bounds", {
 test_that("uncertainty rejects bounds of incorrect length 1", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
@@ -347,7 +358,8 @@ test_that("uncertainty rejects bounds of incorrect length 1", {
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(0)
-      )
+      ),
+      vr_table = vr
     ),
     "length 2"
   )
@@ -357,6 +369,8 @@ test_that("uncertainty rejects bounds of incorrect length 1", {
 test_that("uncertainty rejects bounds of incorrect length 3", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
@@ -364,7 +378,8 @@ test_that("uncertainty rejects bounds of incorrect length 3", {
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(0, 1, 2)
-      )
+      ),
+      vr_table = vr
     ),
     "length 2"
   )
@@ -374,6 +389,8 @@ test_that("uncertainty rejects bounds of incorrect length 3", {
 test_that("uncertainty rejects non-numeric bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
@@ -381,7 +398,8 @@ test_that("uncertainty rejects non-numeric bounds", {
       kernels = c("P", "F"),
       bounds = list(
         s_int = c("a", "b")
-      )
+      ),
+      vr_table = vr
     ),
     "must be numeric"
   )
@@ -391,6 +409,8 @@ test_that("uncertainty rejects non-numeric bounds", {
 test_that("uncertainty rejects missing values in bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
@@ -398,7 +418,8 @@ test_that("uncertainty rejects missing values in bounds", {
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(NA, 1)
-      )
+      ),
+      vr_table = vr
     ),
     "may not contain NA"
   )
@@ -408,6 +429,8 @@ test_that("uncertainty rejects missing values in bounds", {
 test_that("uncertainty rejects reversed bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
@@ -415,7 +438,8 @@ test_that("uncertainty rejects reversed bounds", {
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(1, 0)
-      )
+      ),
+      vr_table = vr
     ),
     "lower bound"
   )
@@ -425,6 +449,8 @@ test_that("uncertainty rejects reversed bounds", {
 test_that("uncertainty rejects parameter values outside supplied bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_error(
     uncertainty(
@@ -432,7 +458,8 @@ test_that("uncertainty rejects parameter values outside supplied bounds", {
       kernels = c("P", "F"),
       bounds = list(
         s_int = c(10, 20)
-      )
+      ),
+      vr_table = vr
     ),
     "outside the supplied bounds"
   )
@@ -442,6 +469,8 @@ test_that("uncertainty rejects parameter values outside supplied bounds", {
 test_that("uncertainty accepts infinite bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   expect_no_error(
 
@@ -451,7 +480,8 @@ test_that("uncertainty accepts infinite bounds", {
       bounds = list(
         s_int = c(-Inf, Inf),
         f_s_int = c(0, Inf)
-      )
+      ),
+      vr_table = vr
     )
 
   )
@@ -461,6 +491,8 @@ test_that("uncertainty accepts infinite bounds", {
 test_that("uncertainty warns when delta exceeds feasible region", {
 
   ipm <- make_test_ipm("simple_di_det")
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
 
   pars <- parameters(ipm)
 
@@ -473,7 +505,8 @@ test_that("uncertainty warns when delta exceeds feasible region", {
       bounds = list(
         s_int = c(pars$s_int - 1,
                   pars$s_int + 1)
-      )
+      ),
+      vr_table = vr
     ),
 
     "delta"
