@@ -290,6 +290,200 @@ test_that("uncertainty respects parameter subset", {
                     c("s_int", "g_int")))
 })
 
+test_that("uncertainty rejects non-list bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = c(0, 1)
+    ),
+    "`bounds` must be NULL or a named list"
+  )
+
+})
+
+test_that("uncertainty rejects unnamed bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(c(0, 1))
+    ),
+    "must be a named list"
+  )
+
+})
+
+test_that("uncertainty rejects unknown parameter names in bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        fake_parameter = c(0, 1)
+      )
+    ),
+    "Unknown parameter"
+  )
+
+})
+
+test_that("uncertainty rejects bounds of incorrect length 1", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(0)
+      )
+    ),
+    "length 2"
+  )
+
+})
+
+test_that("uncertainty rejects bounds of incorrect length 3", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(0, 1, 2)
+      )
+    ),
+    "length 2"
+  )
+
+})
+
+test_that("uncertainty rejects non-numeric bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c("a", "b")
+      )
+    ),
+    "must be numeric"
+  )
+
+})
+
+test_that("uncertainty rejects missing values in bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(NA, 1)
+      )
+    ),
+    "may not contain NA"
+  )
+
+})
+
+test_that("uncertainty rejects reversed bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(1, 0)
+      )
+    ),
+    "lower bound"
+  )
+
+})
+
+test_that("uncertainty rejects parameter values outside supplied bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(10, 20)
+      )
+    ),
+    "outside the supplied bounds"
+  )
+
+})
+
+test_that("uncertainty accepts infinite bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_no_error(
+
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(-Inf, Inf),
+        f_s_int = c(0, Inf)
+      )
+    )
+
+  )
+
+})
+
+test_that("uncertainty warns when delta exceeds feasible region", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  expect_warning(
+
+    uncertainty(
+      ipm,
+      kernels = c("P", "F"),
+      delta = 100,
+      bounds = list(
+        s_int = c(pars$s_int - 1,
+                  pars$s_int + 1)
+      )
+    ),
+
+    "delta"
+
+  )
+
+})
+
+
+
 # Tests for numerical consistency ----------------------------------------------
 
 test_that("uncertainty computes lambda variance", {

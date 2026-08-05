@@ -100,7 +100,7 @@ A single numeric value giving the estimated model uncertainty, calculated as the
 ### `params_uncert` 
 
 A dataframe summarizing parameter-level uncertainty. Each row corresponds to a single model parameter and includes:  
-- the mean sensitivity and elasticity across all sampled models
+- the mean sensitivity and elasticity across all sampled models, and the finite-difference method used to calculate the sensitivities
 - the variance, standard error, and coefficient of variation of the sampled parameter values
 - the estimated contribution of the parameter to the uncertainty in λ
 - the proportion of total model uncertainty explained by the parameter

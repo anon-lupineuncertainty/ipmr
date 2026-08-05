@@ -59,7 +59,7 @@ validate_ipm_base <- function(ipm) {
   )
 }
 
-#' Warn if finite-difference perturbation may change parameter sign
+#' Warn if finite-difference perturbation may cross parameter boundaries
 #'
 #' Internal helper used by sensitivity and uncertainty validation.
 #'
@@ -67,25 +67,97 @@ validate_ipm_base <- function(ipm) {
 #' @param par_values Numeric vector of parameter values corresponding to
 #'   `par_names`.
 #' @param delta Finite-difference perturbation size.
+#' @param bounds Named list whose elements are numeric vectors of length two
+#'  defining parameter boundary constraints.
 #'
 #' @noRd
-warn_delta_crossing <- function(par_names, par_values = NULL, delta) {
+warn_boundary_crossing <- function(par_names,
+                                   par_values,
+                                   delta,
+                                   bounds = NULL) {
 
-  if (!is.null(par_values)) {
-    par_names <- unique(par_names[abs(par_values) <= delta])
+  ## ---- Standardize parameter values to a named list
+
+  if (is.data.frame(par_values)) {
+    par_values <- as.list(par_values)
+  } else if (is.numeric(par_values)) {
+    par_values <- as.list(par_values)
   }
 
-  if (length(par_names) > 0) {
+  warn_pars <- character(0)
+
+  ## ---- No bounds supplied (backwards-compatible behaviour)
+
+  if (is.null(bounds)) {
+
+    warn_pars <- par_names[
+      vapply(
+        par_names,
+        function(p) any(abs(par_values[[p]]) <= delta),
+        logical(1)
+      )
+    ]
+
+    if (length(warn_pars) > 0) {
+
+      warning(
+        "The following parameter(s) are within `delta` of zero and ",
+        "may change sign during perturbation: ",
+        paste(warn_pars, collapse = ", "),
+        ".\n\n",
+        "If these parameters are biologically constrained (e.g. ",
+        "probabilities or rates bounded below by zero), consider ",
+        "supplying the `bounds` argument so that one-sided finite ",
+        "differences can be used when necessary. Proceeding may ",
+        "result in failed or invalid subkernel construction or ",
+        "failed sensitivity/uncertainty calculations."
+      )
+
+    }
+
+    return(invisible(NULL))
+
+  }
+
+  ## ---- Bounds supplied
+
+  for (par in names(bounds)) {
+
+    # Skip parameters that are not being perturbed
+    if (!(par %in% par_names))
+      next
+
+    theta <- par_values[[par]]
+
+    lower <- bounds[[par]][1]
+    upper <- bounds[[par]][2]
+
+    crosses_lower <- any(theta - delta < lower)
+    crosses_upper <- any(theta + delta > upper)
+
+    if (crosses_lower || crosses_upper) {
+      warn_pars <- c(warn_pars, par)
+    }
+
+  }
+
+  warn_pars <- unique(warn_pars)
+
+  if (length(warn_pars) > 0) {
+
     warning(
-      "The following parameter(s) are within `delta` of zero and may change ",
-      "sign during perturbation: ",
-      paste(par_names, collapse = ", "),
-      ". This may result in failed or invalid subkernel construction or failed ",
-      "sensitivity/uncertainty calculations."
+      "Perturbation by `delta` crosses the specified parameter ",
+      "bounds for: ",
+      paste(warn_pars, collapse = ", "),
+      ".\n\n",
+      "One-sided finite differences should be used for these ",
+      "parameter(s) instead of the central difference."
     )
+
   }
 
   invisible(NULL)
+
 }
 
 
@@ -95,7 +167,7 @@ warn_delta_crossing <- function(par_names, par_values = NULL, delta) {
 #' Returns usable objects for the sensitivity function.
 #'
 #' @noRd
-validate_ipm_sensitivity <- function(ipm, pars, kernels, delta) {
+validate_ipm_sensitivity <- function(ipm, pars, kernels, delta, bounds) {
 
   base <- validate_ipm_base(ipm)
 
@@ -182,21 +254,110 @@ validate_ipm_sensitivity <- function(ipm, pars, kernels, delta) {
     stop("`delta` must be > 0.")
   }
 
-  ## ---- check if delta changes sign on any parameters
+  ## ---- bounds
 
-  warn_delta_crossing(
+  if (!is.null(bounds)) {
+    if (!is.list(bounds)) {
+      stop("`bounds` must be NULL or a named list.")
+    }
+    if (is.null(names(bounds)) || any(names(bounds) == "")) {
+      stop("`bounds` must be a named list whose names correspond to parameter names.")
+    }
+  }
+
+  bad_names <- setdiff(names(bounds), names(pars_all))
+  if (length(bad_names) > 0) {
+    stop(
+      "Unknown parameter(s) supplied in `bounds`: ",
+      paste(bad_names, collapse = ", ")
+    )
+  }
+
+  bad_length <- vapply(bounds, length, integer(1)) != 2
+  if (any(bad_length)) {
+    stop(
+      "Each element of `bounds` must be a numeric vector of length 2."
+    )
+  }
+
+  bad_numeric <- !vapply(bounds, is.numeric, logical(1))
+  if (any(bad_numeric)) {
+    stop(
+      "Each element of `bounds` must be numeric."
+    )
+  }
+
+  has_na <- vapply(
+    bounds,
+    function(x) any(is.na(x)),
+    logical(1) )
+  if (any(has_na)) {
+    stop(
+      "Bounds may not contain NA values. Use -Inf or Inf for unbounded parameters."
+    )
+  }
+
+  bad_order <- vapply(
+    bounds,
+    function(x) x[1] > x[2],
+    logical(1) )
+  if (any(bad_order)) {
+    stop(
+      "Each lower bound must be less than or equal to its corresponding upper bound."
+    )
+  }
+
+  outside <- vapply(
+    names(bounds),
+    function(p) {
+      theta <- pars_all[[p]]
+      theta < bounds[[p]][1] ||
+        theta > bounds[[p]][2]
+    },
+    logical(1)
+  )
+
+  if (any(outside)) {
+    stop(
+      "Current parameter value(s) fall outside the supplied bounds: ",
+      paste(names(bounds)[outside], collapse = ", ")
+    )
+  }
+
+  too_large <- vapply(
+    names(bounds),
+    function(p) {
+      theta <- pars_all[[p]]
+      theta - delta < bounds[[p]][1] &&
+        theta + delta > bounds[[p]][2]
+    },
+    logical(1)
+  )
+
+  if (any(too_large)) {
+    warning(
+      "For the following parameter(s), `delta` exceeds the feasible ",
+      "parameter range: ",
+      paste(names(bounds)[too_large], collapse = ", "),
+      ". Numerical derivatives may be inaccurate."
+    )
+  }
+
+  warn_boundary_crossing(
     par_names = pars,
     par_values = as.numeric(pars_all[pars]),
-    delta = delta
+    delta = delta,
+    bounds = bounds
   )
 
   ## return cleaned objects for main function
   list(
-    ipm = ipm,
-    pars = pars,
+    ipm      = ipm,
+    pars     = pars,
     pars_all = pars_all,
-    kernels = kernels,
-    delta = delta
+    kernels  = kernels,
+    delta    = delta,
+    bounds   = bounds
   )
 }
 
@@ -231,7 +392,7 @@ new_ipmr_uncertainty <- function(ipm, lambdas, mod_uncert, params_uncert, vr_unc
 #'
 #' @noRd
 validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
-                                     delta, cores) {
+                                     delta, bounds, cores) {
 
   base <- validate_ipm_base(ipm)
 
@@ -339,18 +500,100 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     stop("`delta` must be a single numeric value > 0.")
   }
 
-  ## ---- check if delta changes sign on any parameters
-  problem_pars <- pars[
-    vapply(
-      pars,
-      function(p) any(abs(samples[[p]]) <= delta),
-      logical(1)
-    )
-  ]
+  ## ---- bounds
 
-  warn_delta_crossing(
-    par_names = problem_pars,
-    delta = delta
+  if (!is.null(bounds)) {
+    if (!is.list(bounds)) {
+      stop("`bounds` must be NULL or a named list.")
+    }
+    if (is.null(names(bounds)) || any(names(bounds) == "")) {
+      stop("`bounds` must be a named list whose names correspond to parameter names.")
+    }
+  }
+
+  bad_names <- setdiff(names(bounds), names(pars_all))
+  if (length(bad_names) > 0) {
+    stop(
+      "Unknown parameter(s) supplied in `bounds`: ",
+      paste(bad_names, collapse = ", ")
+    )
+  }
+
+  bad_length <- vapply(bounds, length, integer(1)) != 2
+  if (any(bad_length)) {
+    stop(
+      "Each element of `bounds` must be a numeric vector of length 2."
+    )
+  }
+
+  bad_numeric <- !vapply(bounds, is.numeric, logical(1))
+  if (any(bad_numeric)) {
+    stop(
+      "Each element of `bounds` must be numeric."
+    )
+  }
+
+  has_na <- vapply(
+    bounds,
+    function(x) any(is.na(x)),
+    logical(1) )
+  if (any(has_na)) {
+    stop(
+      "Bounds may not contain NA values. Use -Inf or Inf for unbounded parameters."
+    )
+  }
+
+  bad_order <- vapply(
+    bounds,
+    function(x) x[1] > x[2],
+    logical(1) )
+  if (any(bad_order)) {
+    stop(
+      "Each lower bound must be less than or equal to its corresponding upper bound."
+    )
+  }
+
+  outside <- vapply(
+    names(bounds),
+    function(p) {
+      theta <- pars_all[[p]]
+      theta < bounds[[p]][1] ||
+        theta > bounds[[p]][2]
+    },
+    logical(1)
+  )
+
+  if (any(outside)) {
+    stop(
+      "Current parameter value(s) fall outside the supplied bounds: ",
+      paste(names(bounds)[outside], collapse = ", ")
+    )
+  }
+
+  too_large <- vapply(
+    names(bounds),
+    function(p) {
+      theta <- pars_all[[p]]
+      theta - delta < bounds[[p]][1] &&
+        theta + delta > bounds[[p]][2]
+    },
+    logical(1)
+  )
+
+  if (any(too_large)) {
+    warning(
+      "For the following parameter(s), `delta` exceeds the feasible ",
+      "parameter range: ",
+      paste(names(bounds)[too_large], collapse = ", "),
+      ". Numerical derivatives may be inaccurate."
+    )
+  }
+
+  warn_boundary_crossing(
+    par_names = pars,
+    par_values = samples,
+    delta = delta,
+    bounds = bounds
   )
 
   ## ---- cores
@@ -389,6 +632,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     kernels  = kernels,
     vr_table = vr_table,
     delta    = delta,
+    bounds   = bounds,
     cores    = as.integer(cores)
   )
 }

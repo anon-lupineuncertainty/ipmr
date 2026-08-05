@@ -280,6 +280,198 @@ test_that("sensitivity errors on unknown parameter", {
   )
 })
 
+test_that("sensitivity rejects non-list bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = c(0, 1)
+    ),
+    "`bounds` must be NULL or a named list"
+  )
+
+})
+
+test_that("sensitivity rejects unnamed bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(c(0, 1))
+    ),
+    "must be a named list"
+  )
+
+})
+
+test_that("sensitivity rejects unknown parameter names in bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        fake_parameter = c(0, 1)
+      )
+    ),
+    "Unknown parameter"
+  )
+
+})
+
+test_that("sensitivity rejects bounds of incorrect length 1", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(0)
+      )
+    ),
+    "length 2"
+  )
+
+})
+
+test_that("sensitivity rejects bounds of incorrect length 3", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(0, 1, 2)
+      )
+    ),
+    "length 2"
+  )
+
+})
+
+test_that("sensitivity rejects non-numeric bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c("a", "b")
+      )
+    ),
+    "must be numeric"
+  )
+
+})
+
+test_that("sensitivity rejects missing values in bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(NA, 1)
+      )
+    ),
+    "may not contain NA"
+  )
+
+})
+
+test_that("sensitivity rejects reversed bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(1, 0)
+      )
+    ),
+    "lower bound"
+  )
+
+})
+
+test_that("sensitivity rejects parameter values outside supplied bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_error(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(10, 20)
+      )
+    ),
+    "outside the supplied bounds"
+  )
+
+})
+
+test_that("sensitivity accepts infinite bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  expect_no_error(
+
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(-Inf, Inf),
+        f_s_int = c(0, Inf)
+      )
+    )
+
+  )
+
+})
+
+test_that("sensitivity warns when delta exceeds feasible region", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  expect_warning(
+
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      delta = 100,
+      bounds = list(
+        s_int = c(pars$s_int - 1,
+                  pars$s_int + 1)
+      )
+    ),
+
+    "delta"
+
+  )
+
+})
+
 test_that("elasticity is consistent with sensitivity definition", {
 
   ipm <- make_test_ipm("simple_di_det")
