@@ -324,6 +324,42 @@ validate_ipm_sensitivity <- function(ipm, pars, kernels, delta, bounds) {
     )
   }
 
+  for (par in names(bounds)) {
+
+    theta <- pars_all[[par]]
+    lower <- bounds[[par]][1]
+    upper <- bounds[[par]][2]
+
+    ## Parameter itself must lie inside bounds
+    if (theta < lower || theta > upper) {
+      stop(
+        "Parameter '", par,
+        "' has value ", theta,
+        ", which lies outside the supplied bounds [",
+        lower, ", ", upper, "].",
+        call. = FALSE
+      )
+    }
+
+    if (is.finite(lower) &&
+        is.finite(upper) &&
+        delta > (upper - lower)) {
+
+      stop(
+        sprintf(
+          "Parameter '%s' has bounds [%g, %g], giving a feasible interval of %g, which is smaller than delta (%g). Choose a smaller value of delta.",
+          par,
+          lower,
+          upper,
+          upper - lower,
+          delta
+        ),
+        call. = FALSE
+      )
+    }
+
+  }
+
   too_large <- vapply(
     names(bounds),
     function(p) {
@@ -345,7 +381,7 @@ validate_ipm_sensitivity <- function(ipm, pars, kernels, delta, bounds) {
 
   warn_boundary_crossing(
     par_names = pars,
-    par_values = as.numeric(pars_all[pars]),
+    par_values = pars_all[pars],
     delta = delta,
     bounds = bounds
   )
@@ -570,6 +606,42 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     )
   }
 
+  for (par in names(bounds)) {
+
+    theta <- pars_all[[par]]
+    lower <- bounds[[par]][1]
+    upper <- bounds[[par]][2]
+
+    ## Parameter itself must lie inside bounds
+    if (theta < lower || theta > upper) {
+      stop(
+        "Parameter '", par,
+        "' has value ", theta,
+        ", which lies outside the supplied bounds [",
+        lower, ", ", upper, "].",
+        call. = FALSE
+      )
+    }
+
+    if (is.finite(lower) &&
+        is.finite(upper) &&
+        delta > (upper - lower)) {
+
+      stop(
+        sprintf(
+          "Parameter '%s' has bounds [%g, %g], giving a feasible interval of %g, which is smaller than delta (%g). Choose a smaller value of delta.",
+          par,
+          lower,
+          upper,
+          upper - lower,
+          delta
+        ),
+        call. = FALSE
+      )
+    }
+
+  }
+
   too_large <- vapply(
     names(bounds),
     function(p) {
@@ -586,6 +658,22 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
       "parameter range: ",
       paste(names(bounds)[too_large], collapse = ", "),
       ". Numerical derivatives may be inaccurate."
+    )
+  }
+
+  outside_samples <- vapply(
+    names(bounds),
+    function(p) {
+      vals <- samples[[p]]
+      any(vals < bounds[[p]][1] | vals > bounds[[p]][2])
+    },
+    logical(1)
+  )
+
+  if (any(outside_samples)) {
+    stop(
+      "Sampled value(s) fall outside the supplied bounds for: ",
+      paste(names(bounds)[outside_samples], collapse = ", ")
     )
   }
 

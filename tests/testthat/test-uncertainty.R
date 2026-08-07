@@ -209,6 +209,17 @@ ipm <- make_test_ipm("simple_di_det")
 ipm_dd <- make_test_ipm("simple_dd_det")
 ipm_stoch <- make_test_ipm("simple_di_stoch")
 
+samples <- as.data.frame(
+  lapply(parameters(ipm), function(x) rep(x, 2))
+)
+
+vr <- data.frame(
+  parameter = names(parameters(ipm)),
+  vital_rate = "test"
+)
+
+ker <- c("P", "F")
+
 # Tests for structural correctness ---------------------------------------------
 
 test_that("uncertainty errors on missing IPM", {
@@ -517,13 +528,13 @@ test_that("uncertainty warns when delta exceeds feasible region", {
 
   pars <- parameters(ipm)
 
-  expect_warning(
+  expect_error(
 
     uncertainty(
       ipm,
       samples = samples,
       kernels = c("P", "F"),
-      delta = 100,
+      delta = 5,
       bounds = list(
         s_int = c(pars$s_int - 1,
                   pars$s_int + 1)
@@ -534,6 +545,244 @@ test_that("uncertainty warns when delta exceeds feasible region", {
     "delta"
 
   )
+
+})
+
+test_that("uncertainty returns difference method", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 10)))
+
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
+
+  res <- uncertainty(
+    ipm,
+    samples = samples,
+    kernels = c("P", "F"),
+    vr_table = vr
+  )
+
+  expect_true("difference_method" %in% names(res$params_uncert))
+})
+
+test_that("uncertainty records forward differences for bounded parameters", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  samples <- as.data.frame(
+    lapply(pars, function(x) rep(x, 10))
+  )
+
+  samples$s_int[] <- pars$s_int
+
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
+
+  res <- uncertainty(
+    ipm,
+    samples = samples,
+    kernels = c("P", "F"),
+    vr_table = vr,
+    bounds = list(s_int = c(pars$s_int, Inf))
+  )
+
+  expect_equal(
+    res$params_uncert$difference_method[
+      res$params_uncert$parameter == "s_int"
+    ],
+    "forward"
+  )
+
+})
+
+test_that("uncertainty records backward differences for bounded parameters", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  samples <- as.data.frame(
+    lapply(pars, function(x) rep(x, 10))
+  )
+
+  samples$s_int[] <- pars$s_int
+
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
+
+  res <- uncertainty(
+    ipm,
+    samples = samples,
+    kernels = c("P", "F"),
+    vr_table = vr,
+    bounds = list(s_int = c(-Inf, pars$s_int))
+  )
+
+  expect_equal(
+    res$params_uncert$difference_method[
+      res$params_uncert$parameter == "s_int"
+    ],
+    "backward"
+  )
+
+})
+
+test_that("uncertainty records mixed difference methods", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  samples <- as.data.frame(lapply(parameters(ipm), function(x) rep(x, 10)))
+
+  ## Half of the samples sit on the lower bound, half do not
+  samples$s_int <- c(rep(pars$s_int, 5), rep(pars$s_int + 0.5, 5))
+
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
+
+  res <- uncertainty(
+    ipm,
+    samples = samples,
+    kernels = c("P", "F"),
+    vr_table = vr,
+    bounds = list(
+      s_int = c(pars$s_int, Inf)
+    )
+  )
+
+  expect_match(
+    res$params_uncert$difference_method[
+      res$params_uncert$parameter == "s_int"
+    ],
+    "^mixed"
+  )
+
+})
+
+test_that("uncertainty errors when delta exceeds feasible interval", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  samples <- as.data.frame(
+    lapply(pars, function(x) rep(x, 5))
+  )
+
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
+
+  expect_error(
+
+    uncertainty(
+      ipm,
+      samples = samples,
+      kernels = c("P", "F"),
+      vr_table = vr,
+      delta = 1,
+      bounds = list(
+        s_int = c(
+          pars$s_int - 0.25,
+          pars$s_int + 0.25
+        )
+      )
+    ),
+
+    "Choose a smaller value of delta"
+
+  )
+
+})
+
+test_that("uncertainty errors when sampled values cross parameter bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  samples <- as.data.frame(
+    lapply(pars, function(x) rep(x, 10))
+  )
+
+  samples$s_int <- c(
+    rep(pars$s_int, 5),
+    rep(pars$s_int - 0.05, 5)
+  )
+
+  vr <- data.frame(
+    parameter = names(parameters(ipm)),
+    vital_rate = "test" )
+
+  expect_error(
+
+    uncertainty(
+      ipm,
+      samples = samples,
+      kernels = c("P","F"),
+      vr_table = vr,
+      delta = 0.1,
+      bounds = list(
+        s_int = c(pars$s_int, Inf)
+      )
+    ),
+
+    "supplied bounds"
+  )
+
+})
+
+test_that("uncertainty rejects sampled values outside bounds", {
+
+  pars <- parameters(ipm)
+
+  samples <- as.data.frame(
+    lapply(pars, function(x) rep(x, 10))
+  )
+
+  samples$s_int[1] <- pars$s_int - 0.5
+
+  expect_error(
+
+    uncertainty(
+      ipm,
+      samples = samples,
+      kernels = c("P", "F"),
+      vr_table = vr,
+      bounds = list(
+        s_int = c(pars$s_int, Inf)
+      )
+    ),
+
+    "Sampled value\\(s\\) fall outside the supplied bounds"
+
+  )
+
+})
+
+test_that("uncertainty template mode returns expected table", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  vr <- uncertainty(ipm, vr_table = "template")
+
+  expect_s3_class(vr, "data.frame")
+
+  expect_equal(
+    names(vr),
+    c("parameter", "vital_rate")
+  )
+
+  expect_equal(
+    vr$parameter,
+    names(parameters(ipm))
+  )
+
+  expect_true(all(is.na(vr$vital_rate)))
 
 })
 
@@ -584,6 +833,43 @@ test_that("uncertainty sensitivities match sensitivity()", {
     unname(sens[unc$params_uncert$parameter]),
     tolerance = 1e-6
   )
+})
+
+test_that("bounded uncertainty sensitivities match bounded sensitivity()", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  samples <- as.data.frame(lapply(pars, function(x) rep(x, 25)))
+
+  vr <- uncertainty(ipm, vr_table = "template")
+  vr$vital_rate <- "test"
+
+  bounds <- list(
+    s_int = c(pars$s_int, Inf)
+  )
+
+  unc <- uncertainty(
+    ipm,
+    samples = samples,
+    kernels = c("P", "F"),
+    vr_table = vr,
+    bounds = bounds
+  )
+
+  sens <- sensitivity(
+    ipm,
+    kernels = c("P", "F"),
+    bounds = bounds
+  )
+
+  expect_equal(
+    unname(unc$params_uncert$sensitivity),
+    unname(sens$sensitivity[unc$params_uncert$parameter]),
+    tolerance = 1e-6
+  )
+
 })
 
 test_that("vr_table join works correctly", {

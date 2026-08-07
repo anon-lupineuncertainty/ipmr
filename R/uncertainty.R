@@ -101,6 +101,7 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
     ))
   }
 
+
   ## ---- Input checks
   val <- validate_ipm_uncertainty(ipm, pars, samples, kernels,
                                   vr_table, delta, bounds, cores)

@@ -31,3 +31,5 @@ src-i386/*
 paper/Drafts/submitted_revision*
 paper/Drafts/*.pdf
 collaborations/*
+/doc/
+/Meta/

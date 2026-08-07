@@ -209,6 +209,8 @@ ipm <- make_test_ipm("simple_di_det")
 ipm_dd <- make_test_ipm("simple_dd_det")
 ipm_stoch <- make_test_ipm("simple_di_stoch")
 
+# Tests for structural correctness ---------------------------------------------
+
 test_that("sensitivity errors on missing ipm", {
   expect_error(
     sensitivity(pars = NULL, kernels = NULL, delta = 1e-4),
@@ -448,29 +450,106 @@ test_that("sensitivity accepts infinite bounds", {
 
 })
 
-test_that("sensitivity warns when delta exceeds feasible region", {
+test_that("sensitivity errors when delta exceeds feasible interval", {
 
   ipm <- make_test_ipm("simple_di_det")
 
   pars <- parameters(ipm)
 
-  expect_warning(
+  expect_error(
 
     sensitivity(
       ipm,
       kernels = c("P", "F"),
-      delta = 100,
+      delta = 1,
       bounds = list(
-        s_int = c(pars$s_int - 1,
-                  pars$s_int + 1)
+        s_int = c(
+          pars$s_int - 0.25,
+          pars$s_int + 0.25
+        )
       )
     ),
 
-    "delta"
+    "Choose a smaller value of delta"
 
   )
 
 })
+
+test_that("sensitivity returns difference method", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  res <- sensitivity(
+    ipm,
+    kernels = c("P", "F")
+  )
+
+  expect_true("difference_method" %in% names(res))
+})
+
+test_that("sensitivity records forward differences for bounded parameters", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  res <- sensitivity(
+    ipm,
+    kernels = c("P", "F"),
+    bounds = list(s_int = c(pars$s_int, Inf))
+  )
+
+  expect_warning(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(pars$s_int, Inf)
+      )
+    ),
+    "parameter bounds"
+  )
+
+  expect_equal(
+    unname(res$difference_method["s_int"]),
+    "forward"
+  )
+
+})
+
+test_that("sensitivity records backward differences for bounded parameters", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  res <- sensitivity(
+    ipm,
+    kernels = c("P", "F"),
+    bounds = list(s_int = c(-Inf, pars$s_int))
+  )
+
+  expect_warning(
+    sensitivity(
+      ipm,
+      kernels = c("P", "F"),
+      bounds = list(
+        s_int = c(pars$s_int, Inf)
+      )
+    ),
+    "parameter bounds"
+  )
+
+  expect_equal(
+    unname(res$difference_method["s_int"]),
+    "backward"
+  )
+
+})
+
+
+# Tests for numerical consistency ----------------------------------------------
 
 test_that("elasticity is consistent with sensitivity definition", {
 
@@ -521,4 +600,31 @@ test_that("unknown kernel errors clearly", {
     sensitivity(ipm, kernels = c("P", "NOT_REAL")),
     "Unknown kernel"
   )
+})
+
+test_that("bounded sensitivity matches unbounded sensitivity when parameter is away from bounds", {
+
+  ipm <- make_test_ipm("simple_di_det")
+
+  pars <- parameters(ipm)
+
+  res1 <- sensitivity(
+    ipm,
+    kernels = c("P", "F")
+  )
+
+  res2 <- sensitivity(
+    ipm,
+    kernels = c("P", "F"),
+    bounds = list(
+      s_int = c(0, Inf)
+    )
+  )
+
+  expect_equal(
+    res1$sensitivity,
+    res2$sensitivity,
+    tolerance = 1e-6
+  )
+
 })
