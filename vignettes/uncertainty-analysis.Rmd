@@ -12,17 +12,156 @@ vignette: >
 
 ## Overview
 
-Integral projection models (IPMs) are commonly used to estimate population growth rates and quantify the demographic importance of different vital rates. However, parameter estimates used to construct IPMs are themselves uncertain, and this uncertainty propagates into model predictions. The `uncertainty()` function estimates how uncertainty in individual parameters contributes to uncertainty in the population growth rate (λ) using finite-difference sensitivities and the covariance structure of sampled parameter estimates.  
+Integral projection models (IPMs) are commonly used to estimate population growth rates and quantify the demographic importance of different vital rates. However, parameter estimates used to construct IPMs are themselves uncertain, and this uncertainty propagates into model predictions. The `sensitivity()` function estimates how population growth rate (λ) responds to changes in individual model parameters, while `uncertainty()` uses these sensitivities together with the covariance structure of sampled parameter estimates to estimate how parameter uncertainty contributes to uncertainty in λ.  
 
 This vignette demonstrates how to:  
+- perform a sensitivity analysis
 - prepare sampled parameter values  
 - perform an uncertainty analysis  
 - interpret the output  
-- visualize parameter and vital rate contributions to uncertainty  
+- visualize parameter and vital rate contributions to uncertainty 
+
+## Sensitivity analysis {#sensitivity}
+
+The `sensitivity()` function calculates the sensitivity and elasticity of λ to changes in individual model parameters using finite differences. Sensitivity describes the absolute change in λ associated with a change in a parameter, whereas elasticity expresses this relationship on a proportional scale. 
+
+### Performing the analysis with `sensitivity()`
+
+A sensitivity analysis requires an `ipmr` model object and a specification of the IPM matrix through the `mega_mat` argument. Parameters can optionally be specified using the pars argument.
+
+```{r, eval = F, echo = T}
+sens <- sensitivity(
+  ipm = ipm,
+  pars = pars,
+  mega_mat = mega_mat
+)
+```
+
+If `pars = NULL`, sensitivities are calculated for all parameters in the IPM.
+
+#### The `mega_mat` argument {#mega-mat}
+
+The `mega_mat` argument specifies how the subkernels of the IPM should be assembled into the iteration matrix used to calculate λ. It is passed directly to `make_iter_kernel()`, which constructs the complete iteration matrix from the subkernels stores in the `ipmr` object.
+
+For **simple IPMs**, the iteration kernel is constructed automatically by summing the model's subkernels. In this case, `mega_mat` does not need to specified explicitly.
+
+For **general IPMS**, `mega_mat` specifies the complete block structure of the iteration matrix. Matrix blocks must be supplied in **row-major order**, meaning that entries are specified from left to right across the first row, followed by the second row, and so on.
+
+For example, a two-state-class IPM with the block structure
+
+[
+\mathbf{K} =
+\begin{pmatrix}
+\mathbf{P}{11} & \mathbf{F}{12} \
+\mathbf{F}{21} & \mathbf{P}{22}
+\end{pmatrix}
+]
+
+would be specified as:
+
+```{r, eval = F, echo = T}
+mega_mat <- c(
+  "P_11", "F_12",
+  "F_21", "P_22"
+)
+```
+
+The four entries correspond to the four blocks of the matrix in row-major order:
+
+`P_11   F_12
+F_21   P_22`
+
+The entries in `mega_mat` must correspond to subkernels that exist in the ipmr object. The names should therefore match the kernel names used when constructing the IPM.
+
+##### Combining multiple subkernels within a block
+
+A single matrix block can contain the sum of multiple subkernels. This is useful when more than one demographic process contributes to the same transition between state classes.
+
+For example, suppose the upper-left block receives contributions from both `P` and `F`, while the lower-right block contains `P_22`. The iteration matrix could be written as
+
+[
+\mathbf{K} =
+\begin{pmatrix}
+\mathbf{P} + \mathbf{F} & \mathbf{B} \
+\mathbf{C} & \mathbf{P}_{22}
+\end{pmatrix}.
+]
+
+The corresponding mega_mat specification is:
+
+```{r, eval = F, echo = T}
+mega_mat <- c(
+  "P + F", "B",
+  "C",     "P_22"
+)
+```
+
+Alternatively, the entire specification can be supplied as a character string:
+
+`mega_mat <- "c(P + F, B, C, P_22)"`
+
+Both forms use the same syntax internally. The string form can be convenient when the matrix specification is generated programmatically or stored as a single object.
+
+In most cases, users do not need to construct these matrices manually. The important requirement is that the `mega_mat` specification accurately represents the biological transitions encoded by the IPM and uses the same kernel names as the original model.
+
+##### Other specifications accepted by `make_iter_kernel()`
+
+As the `mega_mat` argument is passed only to `make_iter_kernel()`, other specifications are accepted as described in the documentation for \code{\link{make_iter_kernel}}. These include parameter set indices, the identity matrix `I`, and the zero matrix `0`. 
+
+#### Numerical differentiation
+
+Sensitivities are calculated using finite differences. By default, `sensitivity()` perturbs each parameter by `delta = 1e-4` and uses a central finite difference:
+
+[
+\frac{\lambda(\theta + \delta) - \lambda(\theta - \delta)}
+{2\delta}.
+]
+
+The perturbation size should be small enough to provide a useful numerical approximation while remaining large enough to avoid numerical precision problems.
+
+For parameters with biological bounds, such as probabilities constrained to the interval [0, 1], subtracting `delta` may produce an invalid parameter value or kernel construction. The bounds argument can be used to specify these constraints:
+
+```{r, eval = F, echo = T}
+sens <- sensitivity(
+  ipm = ipm,
+  mega_mat = c("P", "F"),
+  bounds = list(
+    s_int    = c(-Inf, Inf), #default behavior; does not need to be specified
+    survival = c(0, 1)
+  )
+)
+```
+
+Bounds are specified as a named list, with each element containing the lower and upper bound for one parameter. Parameters not included in `bounds` are treated as unbounded.
+
+When a parameter is sufficiently close to a specified boundary that a central perturbation would cross that boundary, `sensitivity()` automatically uses a one-sided finite difference. For example, if a parameter is exactly at its lower bound, a forward difference is used:
+
+[
+\frac{\lambda(\theta + \delta) - \lambda(\theta)}
+{\delta}.
+]
+
+Similarly, a backward difference is used when perturbation toward the upper side would cross an upper bound.
+
+The finite-difference method used for each parameter is returned in the `difference_method` element of the result.
+
+#### Interpreting sensitivity output
+
+The result of `sensitivity()` contains sensitivity and elasticity estimates for each parameter:
+
+`sens$sensitivity
+sens$elasticity
+sens$difference_method`
+
+Sensitivity values describe the absolute effect of a parameter on λ, whereas elasticity values describe the proportional effect. Elasticity is therefore particularly useful when comparing parameters measured on different scales.
+
+The `difference_method` output indicates whether each parameter was evaluated using a central, forward, or backward finite difference.
+
+Sensitivity analysis can be useful as a standalone analysis for identifying parameters to which population growth is most responsive. It also provides the parameter sensitivities used by `uncertainty()` to decompose uncertainty in λ.
 
 ## Quick start guide {#quick}  
 
-To perform an uncertainty analysis with `uncertainty()`, you will need four required inputs and three optional inputs.  
+To perform an uncertainty analysis with `uncertainty()`, you will need four required inputs and four optional inputs.  
 
 ### `ipm`  
 
@@ -42,17 +181,41 @@ Sampled parameter values may be obtained by bootstrap resampling demographic dat
 
 All parameters required to construct the IPM must be included in `samples`, even if some parameters are held constant across all sampled models. We recommend using at least 1,000 sampled parameter sets to obtain stable estimates of parameter uncertainty.  
 
-### `kernels`  
+### `mega_mat`  
 
-A character vector specifying the subkernel structure of the `ipmr` object. The kernel names must match those used to construct the `ipmr` object and must be supplied in row-major order.  
+A character vector or string specifying the subkernel structure of the `ipmr` object. For general IPMs, the `mega_mat` argument describes how subkernels are assembled into the complete iteration matrix. The subkernel names must match those used to construct the `ipmr` object and must be supplied in row-major order.  
+
+The same `mega_mat` specification used for `sensitivity()` should be supplied to `uncertainty()` when both analyses are performed on the same IPM. See the [discussion of `mega_mat`]{#mega-mat} in the sensitivity analysis section for examples.
 
 ### `vr_table` (optional)  
 
-An optional dataframe mapping each parameter to the vital rate to which it corresponds. This table is used to summarize parameter uncertainty contributions by vital rate and to support downstream visualization with the `plot()` function. If omitted, uncertainty contributions are only reported at the parameter level.  Calling `uncertainty(ipm, vr_table = "template")` generates a template dataframe that can be manually filled in for all parameters in the IPM. 
+An optional dataframe mapping each parameter to the vital rate to which it corresponds. This table is used to summarize parameter uncertainty contributions by vital rate and to support downstream visualization with the `plot()` function. If omitted, uncertainty contributions are only reported at the parameter level.
+
+Calling `uncertainty(ipm, vr_table = "template")` generates a template dataframe that can be manually filled in for all parameters in the IPM. 
 
 ### `delta` (optional)  
 
-A numeric scalar specifying the the perturbation size used for numerical differentiation when calculating parameter sensitivities. The default is `delta = 1e-4`. For some model constructions, selecting a delta value greater than the absolute value of the smallest parameter value may result in invalid subkernels. Care should be taken to select a sufficiently small value for delta such that adding or subtracting this value from all sampled parameter values does not change the sign on the parameter.  
+A numeric scalar specifying the perturbation size used for numerical differentiation when calculating parameter sensitivities. The default is `delta = 1e-4`.
+
+For some model constructions, selecting a `delta` value greater than the absolute value of the smallest parameter value may result in invalid subkernels. Care should be taken to select a sufficiently small value for `delta` such that perturbation of the sampled parameter values remains within the biologically feasible parameter space.
+
+When parameter bounds are known, they can be supplied through the `bounds` argument. `uncertainty()` then uses the same finite-difference rules as `sensitivity()`, including forward or backward differences when a perturbation would cross a specified boundary.
+
+### `bounds` (optional)
+
+An optional named list specifying lower and upper bounds for model parameters. Each element should be a numeric vector of length two giving the lower and upper bounds, respectively. 
+
+For example:
+```{r, eval = F, echo = T}
+bounds <- list(
+  survival    = c(0, 1),
+  recruitment = c(0, Inf)
+)
+```
+
+Parameters omitted from `bounds` are treated as unbounded. When sampled parameter values occur within `delta` of a boundary, `uncertainty()` automatically selects an appropriate one-sided finite difference rather than perturbing the parameter outside its feasible range.  
+
+The supplied bounds must apply to every sampled value of the corresponding parameter. Sampled values outside the specified bounds are rejected because the resulting sensitivity calculations would no longer represent the specified parameter space.
 
 ### `cores` (optional)  
 
@@ -73,7 +236,7 @@ unc <- uncertainty(
   ipm = ipm,
   samples = samples,
   pars = pars,
-  kernels = kernels,
+  mega_mat = mega_mat,
   vr_table = vr_table,
   cores = parallelly::availableCores(omit = 1)
 )
@@ -95,7 +258,7 @@ A numeric vector containing the population growth rates (λ) calculated from eac
 
 ### `mod_uncert`  
 
-A single numeric value giving the estimated model uncertainty, calculated as the variance of the sampled λ values (`var(lambdas))`).  
+A single numeric value giving the estimated model uncertainty, calculated as the variance of the sampled λ values (`var(lambdas)`).  
 
 ### `params_uncert` 
 
@@ -142,7 +305,7 @@ Allowing the model structure to change among bootstrap replicates introduces mod
 
 #### Consider the sampling design   
 
-Bootstrap resampling should reflect the biological and statistical structure of the original study whenever possible/ Depending on the study design, it may be appropriate to stratify sampling by factors such as year, site, or experimental block so that each bootstrap replicate preserves important features of the data. However, it is important to consider the tradeoff between stratification structure and the resulting sample size of each resampled stratified unit.  
+Bootstrap resampling should reflect the biological and statistical structure of the original study whenever possible. Depending on the study design, it may be appropriate to stratify sampling by factors such as year, site, or experimental block so that each bootstrap replicate preserves important features of the data. However, it is important to consider the tradeoff between stratification structure and the resulting sample size of each resampled stratified unit.  
 
 The appropriate resampling strategy depends on the size and structure of the dataset, and no single approach is appropriate for all applications. Users should select a strategy that is consistent with the assumptions of their demographic models and the biological processes being studied. 
 

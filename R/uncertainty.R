@@ -5,12 +5,19 @@
 #' @param ipm An \code{ipmr} IPM object.
 #' @param pars A character vector of parameter names on which to perform the
 #'  uncertainty analysis. Defaults to all parameters in \code{ipm}.
-#' @param samples A data.frame containing sampled parameter values.
-#' @param kernels A character vector specifying the kernel structure in row
-#'  major order.
-#' @param vr_table A data.frame with columns 'parameter' and 'vital_rate'
-#'  mapping each parameter to a user-defined vital rate category. Every
-#'  parameter in \code{pars} must be present exactly once in this table.
+#' @param samples A dataframe containing sampled parameter values.
+#' @param mega_mat A character vector or string specifying the structure of the
+#'  iteration matrix passed to \code{\link{make_iter_kernel}}. For simple IPMs,
+#'  \code{mega_mat} may be omitted or set to \code{NULL}. For general IPMs,
+#'  \code{mega_mat} must be supplied and specify the arrangement of matrix
+#'  blocks in row-major order. Individual blocks may contain sums of subkernels
+#'  when multiple kernels contribute to the same matrix block. For example,
+#'  \code{"c(P + F, seedbank,...)"} specifies an iteration matrix in which \code{P}
+#'  and \code{F} are summed in the same block. See \code{\link{make_iter_kernel}}
+#'  for additional details on specifying \code{mega_mat}.
+#' @param vr_table An optional dataframe with columns 'parameter' and
+#'  'vital_rate' mapping each parameter to a user-defined vital rate category.
+#'  Every parameter in \code{pars} must be present exactly once in this table.
 #' @param delta A numeric scalar specifying the perturbation size used for
 #'  numerical differentiation when calculating sensitivities. Default is 1e-4.
 #' @param bounds An optional named list specifying lower and/or upper bounds
@@ -81,14 +88,20 @@
 #' # vr$vital_rate <- c("survival", "growth", "reproduction", ...)
 #'
 #' # Run uncertainty analysis
-#' # out <- uncertainty(ipm, pars, samples, kernels, vr_table = vr)
+#' # mega_mat <- c("P", "F")
+#' # out <- uncertainty(ipm, pars, samples, mega_mat, vr_table = vr)
+#'
+#' # For multiple kernels contributing to the same matrix block:
+#' # mega_mat <- "c(P + repr, SB1_germ, SB2_germ,
+#' #                enter_SB1, SB1_SB1, SB2_SB1,
+#' #                enter_SB2, SB1_SB2, SB2_SB2)"
 #'
 #' @importFrom dplyr bind_rows left_join rename group_by summarize join_by
 #' @importFrom stats var sd cov
 #' @importFrom reshape2 melt
 #'
 #' @export
-uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
+uncertainty <- function(ipm, pars = NULL, samples, mega_mat = NULL, vr_table,
                         delta = 1e-4, bounds = NULL, cores = 1) {
 
   if (isTRUE(vr_table == "template")) {
@@ -103,13 +116,13 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
 
 
   ## ---- Input checks
-  val <- validate_ipm_uncertainty(ipm, pars, samples, kernels,
+  val <- validate_ipm_uncertainty(ipm, pars, samples, mega_mat,
                                   vr_table, delta, bounds, cores)
 
   ipm      <- val$ipm
   pars     <- val$pars
   samples  <- val$samples
-  kernels  <- val$kernels
+  mega_mat <- val$mega_mat
   vr_table <- val$vr_table
   delta    <- val$delta
   bounds   <- val$bounds
@@ -129,7 +142,7 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
 
   parallel::clusterExport(
     cluster,
-    c("base_ipm", "samples", "pars", "kernels", "delta", "bounds"),
+    c("base_ipm", "samples", "pars", "mega_mat", "delta", "bounds"),
     envir = environment()
   )
 
@@ -141,7 +154,7 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
 
     ipm_temp <- make_ipm(ipm_temp, iterate = FALSE)
 
-    ker_base <- make_iter_kernel(ipm_temp, mega_mat = kernels)
+    ker_base <- make_iter_kernel(ipm_temp, mega_mat = mega_mat)
     mat_base <- ker_base[[1]]
 
     lambda_base <- Re(eigen(mat_base, only.values = TRUE)$values[1])
@@ -155,7 +168,7 @@ uncertainty <- function(ipm, pars = NULL, samples, kernels, vr_table,
       parameters(ipm_tmp) <- pars_tmp
       ipm_tmp <- make_ipm(ipm_tmp, iterate = FALSE)
       ker <- make_iter_kernel(ipm_tmp,
-                              mega_mat = kernels)
+                              mega_mat = mega_mat)
       Re(eigen(ker[[1]], only.values = TRUE)$values[1])
     }
 

@@ -213,14 +213,14 @@ ipm_stoch <- make_test_ipm("simple_di_stoch")
 
 test_that("sensitivity errors on missing ipm", {
   expect_error(
-    sensitivity(pars = NULL, kernels = NULL, delta = 1e-4),
+    sensitivity(pars = NULL, mega_mat = NULL, delta = 1e-4),
     "`ipm` must be provided and cannot be NULL."
   )
 })
 
 test_that("sensitivity rejects non-list ipm", {
   expect_error(
-    sensitivity(ipm = 5, pars = NULL, kernels = NULL),
+    sensitivity(ipm = 5, pars = NULL, mega_mat = NULL),
     "must be a valid ipmr object"
   )
 })
@@ -229,7 +229,7 @@ test_that("sensitivity runs on simple_di_det", {
 
   ipm <- make_test_ipm("simple_di_det")
 
-  res <- sensitivity(ipm, kernels = c("P", "F"))
+  res <- sensitivity(ipm, mega_mat = c("P", "F"))
 
   expect_type(res, "list")
   expect_true(all(c("sensitivity", "elasticity") %in% names(res)))
@@ -245,7 +245,7 @@ test_that("sensitivity respects parameter subset", {
   res <- sensitivity(
     ipm,
     pars = c("s_int", "g_int"),
-    kernels = c("P", "F")
+    mega_mat = c("P", "F")
   )
 
   expect_equal(names(res$sensitivity), c("s_int", "g_int"))
@@ -257,7 +257,7 @@ test_that("sensitivity rejects density-dependent IPMs", {
   ipm <- make_test_ipm("simple_dd_det")
 
   expect_error(
-    sensitivity(ipm, kernels = c("P", "F")),
+    sensitivity(ipm, mega_mat = c("P", "F")),
     "Only density-independent IPMs are currently supported."
   )
 })
@@ -267,7 +267,7 @@ test_that("sensitivity rejects stochastic IPMs", {
   ipm <- make_test_ipm("simple_di_stoch")
 
   expect_error(
-    sensitivity(ipm, kernels = c("P", "F")),
+    sensitivity(ipm, mega_mat = c("P", "F")),
     "Only deterministic IPMs are currently supported."
   )
 })
@@ -277,7 +277,7 @@ test_that("sensitivity errors on unknown parameter", {
   ipm <- make_test_ipm("simple_di_det")
 
   expect_error(
-    sensitivity(ipm, pars = "not_a_param", kernels = c("P", "F")),
+    sensitivity(ipm, pars = "not_a_param", mega_mat = c("P", "F")),
     "Unknown parameter"
   )
 })
@@ -289,7 +289,7 @@ test_that("sensitivity rejects non-list bounds", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = c(0, 1)
     ),
     "`bounds` must be NULL or a named list"
@@ -304,7 +304,7 @@ test_that("sensitivity rejects unnamed bounds", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(c(0, 1))
     ),
     "must be a named list"
@@ -319,7 +319,7 @@ test_that("sensitivity rejects unknown parameter names in bounds", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         fake_parameter = c(0, 1)
       )
@@ -336,7 +336,7 @@ test_that("sensitivity rejects bounds of incorrect length 1", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(0)
       )
@@ -353,7 +353,7 @@ test_that("sensitivity rejects bounds of incorrect length 3", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(0, 1, 2)
       )
@@ -370,7 +370,7 @@ test_that("sensitivity rejects non-numeric bounds", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c("a", "b")
       )
@@ -387,7 +387,7 @@ test_that("sensitivity rejects missing values in bounds", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(NA, 1)
       )
@@ -404,7 +404,7 @@ test_that("sensitivity rejects reversed bounds", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(1, 0)
       )
@@ -421,7 +421,7 @@ test_that("sensitivity rejects parameter values outside supplied bounds", {
   expect_error(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(10, 20)
       )
@@ -439,7 +439,7 @@ test_that("sensitivity accepts infinite bounds", {
 
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(-Inf, Inf),
         f_s_int = c(0, Inf)
@@ -460,7 +460,7 @@ test_that("sensitivity errors when delta exceeds feasible interval", {
 
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       delta = 1,
       bounds = list(
         s_int = c(
@@ -482,7 +482,7 @@ test_that("sensitivity returns difference method", {
 
   res <- sensitivity(
     ipm,
-    kernels = c("P", "F")
+    mega_mat = c("P", "F")
   )
 
   expect_true("difference_method" %in% names(res))
@@ -496,14 +496,14 @@ test_that("sensitivity records forward differences for bounded parameters", {
 
   res <- sensitivity(
     ipm,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     bounds = list(s_int = c(pars$s_int, Inf))
   )
 
   expect_warning(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(pars$s_int, Inf)
       )
@@ -526,14 +526,14 @@ test_that("sensitivity records backward differences for bounded parameters", {
 
   res <- sensitivity(
     ipm,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     bounds = list(s_int = c(-Inf, pars$s_int))
   )
 
   expect_warning(
     sensitivity(
       ipm,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(pars$s_int, Inf)
       )
@@ -555,7 +555,7 @@ test_that("elasticity is consistent with sensitivity definition", {
 
   ipm <- make_test_ipm("simple_di_det")
 
-  res <- sensitivity(ipm, kernels = c("P", "F"))
+  res <- sensitivity(ipm, mega_mat = c("P", "F"))
 
   pars_all <- parameters(ipm)
   lambda <- {
@@ -572,36 +572,6 @@ test_that("elasticity is consistent with sensitivity definition", {
   )
 })
 
-test_that("duplicate kernels trigger warning", {
-
-  ipm <- make_test_ipm("simple_di_det")
-
-  expect_warning(
-    sensitivity(ipm, kernels = c("P", "P")),
-    "Duplicate kernel name"
-  )
-})
-
-test_that("kernel length mismatch triggers warning", {
-
-  ipm <- make_test_ipm("simple_di_det")
-
-  expect_warning(
-    sensitivity(ipm, kernels = c("P")),
-    "has length"
-  )
-})
-
-test_that("unknown kernel errors clearly", {
-
-  ipm <- make_test_ipm("simple_di_det")
-
-  expect_error(
-    sensitivity(ipm, kernels = c("P", "NOT_REAL")),
-    "Unknown kernel"
-  )
-})
-
 test_that("bounded sensitivity matches unbounded sensitivity when parameter is away from bounds", {
 
   ipm <- make_test_ipm("simple_di_det")
@@ -610,12 +580,12 @@ test_that("bounded sensitivity matches unbounded sensitivity when parameter is a
 
   res1 <- sensitivity(
     ipm,
-    kernels = c("P", "F")
+    mega_mat = c("P", "F")
   )
 
   res2 <- sensitivity(
     ipm,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     bounds = list(
       s_int = c(0, Inf)
     )

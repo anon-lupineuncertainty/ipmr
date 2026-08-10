@@ -83,3 +83,4 @@ LinkingTo:
 URL: https://padrinoDB.github.io/ipmr/, https://github.com/padrinoDB/ipmr
 BugReports: https://github.com/padrinoDB/ipmr/issues
 Config/roxygen2/version: 8.0.0
+Config/roxygen2/markdown: TRUE

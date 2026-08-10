@@ -8,7 +8,7 @@ uncertainty(
   ipm,
   pars = NULL,
   samples,
-  kernels,
+  mega_mat = NULL,
   vr_table,
   delta = 1e-04,
   bounds = NULL,
@@ -21,14 +21,21 @@ uncertainty(
 \item{pars}{A character vector of parameter names on which to perform the
 uncertainty analysis. Defaults to all parameters in \code{ipm}.}
 
-\item{samples}{A data.frame containing sampled parameter values.}
+\item{samples}{A dataframe containing sampled parameter values.}
 
-\item{kernels}{A character vector specifying the kernel structure in row
-major order.}
+\item{mega_mat}{A character vector or string specifying the structure of the
+iteration matrix passed to \code{\link{make_iter_kernel}}. For simple IPMs,
+\code{mega_mat} may be omitted or set to \code{NULL}. For general IPMs,
+\code{mega_mat} must be supplied and specify the arrangement of matrix
+blocks in row-major order. Individual blocks may contain sums of subkernels
+when multiple kernels contribute to the same matrix block. For example,
+\code{"c(P + F, seedbank,...)"} specifies an iteration matrix in which \code{P}
+and \code{F} are summed in the same block. See \code{\link{make_iter_kernel}}
+for additional details on specifying \code{mega_mat}.}
 
-\item{vr_table}{A data.frame with columns 'parameter' and 'vital_rate'
-mapping each parameter to a user-defined vital rate category. Every
-parameter in \code{pars} must be present exactly once in this table.}
+\item{vr_table}{An optional dataframe with columns 'parameter' and
+'vital_rate' mapping each parameter to a user-defined vital rate category.
+Every parameter in \code{pars} must be present exactly once in this table.}
 
 \item{delta}{A numeric scalar specifying the perturbation size used for
 numerical differentiation when calculating sensitivities. Default is 1e-4.}
@@ -49,16 +56,16 @@ computations will be distributed. Defaults to 1.}
 \value{
 An object of class \code{"ipmr_uncertainty"} containing:
 \itemize{
-  \item \code{ipm}: The complete IPM object as specified in \code{ipm}.
-  \item \code{lambdas}: Population growth rates (\eqn{\lambda}) calculated
-    for each sampled parameter set.
-  \item \code{mod_uncert}: The variance in \eqn{\lambda} across all sampled
-    parameter sets.
-  \item \code{params_uncert}: A data frame summarizing parameter-level
-    sensitivities, elasticities, finite-difference methods, sampling
-    variance, coefficients of variation, and contributions to uncertainty.
-  \item \code{vr_uncert}: A data frame summarizing variance contributions
-    aggregated by user-defined vital rate, if given.
+\item \code{ipm}: The complete IPM object as specified in \code{ipm}.
+\item \code{lambdas}: Population growth rates (\eqn{\lambda}) calculated
+for each sampled parameter set.
+\item \code{mod_uncert}: The variance in \eqn{\lambda} across all sampled
+parameter sets.
+\item \code{params_uncert}: A data frame summarizing parameter-level
+sensitivities, elasticities, finite-difference methods, sampling
+variance, coefficients of variation, and contributions to uncertainty.
+\item \code{vr_uncert}: A data frame summarizing variance contributions
+aggregated by user-defined vital rate, if given.
 }
 }
 \description{
@@ -105,6 +112,12 @@ of concurrent jobs.
 # vr$vital_rate <- c("survival", "growth", "reproduction", ...)
 
 # Run uncertainty analysis
-# out <- uncertainty(ipm, pars, samples, kernels, vr_table = vr)
+# mega_mat <- c("P", "F")
+# out <- uncertainty(ipm, pars, samples, mega_mat, vr_table = vr)
+
+# For multiple kernels contributing to the same matrix block:
+# mega_mat <- "c(P + repr, SB1_germ, SB2_germ,
+#                enter_SB1, SB1_SB1, SB2_SB1,
+#                enter_SB2, SB1_SB2, SB2_SB2)"
 
 }

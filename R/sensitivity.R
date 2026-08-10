@@ -7,19 +7,26 @@
 #' @param ipm An \code{ipmr} IPM object.
 #' @param pars A character vector of parameter names to perturb. Defaults to
 #'  all parameters in \code{ipm}.
-#' @param kernels A character vector specifying the kernel structure in row
-#'  major order.
+#' @param mega_mat A character vector or string specifying the structure of the
+#'  iteration matrix passed to \code{\link{make_iter_kernel}}. For simple IPMs,
+#'  \code{mega_mat} may be omitted or set to \code{NULL}. For general IPMs,
+#'  \code{mega_mat} must be supplied and specify the arrangement of matrix
+#'  blocks in row-major order. Individual blocks may contain sums of subkernels
+#'  when multiple kernels contribute to the same matrix block. For example,
+#'  \code{"c(P + F, seedbank,...)"} specifies an iteration matrix in which \code{P}
+#'  and \code{F} are summed in the same block. See \code{\link{make_iter_kernel}}
+#'  for additional details on specifying \code{mega_mat}.
 #' @param delta A numeric scalar specifying the perturbation size used for
 #'  numerical differentiation. Default is 1e-4.
-#'  @param bounds An optional named list specifying lower and/or upper bounds
-#'   for model parameters when calculating numerical sensitivities. Each element
-#'   should be a numeric vector of length two giving the lower and upper bounds,
-#'   respectively (e.g., \code{list(surv = c(0, 1), recruit = c(0, Inf))}).
-#'   Parameters omitted from this list are assumed to be unbounded and are
-#'   perturbed using the central finite difference. For parameters with
-#'   specified bounds, the function automatically uses a forward or backward
-#'   finite difference whenever perturbation by \code{delta} would cross a
-#'   boundary; otherwise, the central finite difference is used.
+#' @param bounds An optional named list specifying lower and/or upper bounds
+#'  for model parameters when calculating numerical sensitivities. Each element
+#'  should be a numeric vector of length two giving the lower and upper bounds,
+#'  respectively (e.g., \code{list(surv = c(0, 1), recruit = c(0, Inf))}).
+#'  Parameters omitted from this list are assumed to be unbounded and are
+#'  perturbed using the central finite difference. For parameters with
+#'  specified bounds, the function automatically uses a forward or backward
+#'  finite difference whenever perturbation by \code{delta} would cross a
+#'  boundary; otherwise, the central finite difference is used.
 #'
 #'@details
 #' This function uses perturbation to estimate the sensitivity of \eqn{\lambda}
@@ -28,6 +35,10 @@
 #' Currently implemented for deterministic ("det"), density-independent
 #' ("di") IPMs constructed with \code{ipmr}. Stochastic ("stoch") and
 #' density-dependent ("dd") IPMs are not supported.
+#'
+#' For general IPMs, \code{mega_mat} should describe the complete block
+#' structure of the iteration matrix. The syntax accepted by \code{make_iter_kernel}
+#' is passed through without modification.
 #'
 #' ## Finite differences and bounded parameters
 #'
@@ -91,17 +102,17 @@
 #' #   bounds = bounds )
 #'
 #' @export
-sensitivity <- function(ipm, pars = NULL, kernels, delta = 1e-4,
+sensitivity <- function(ipm, pars = NULL, mega_mat = NULL, delta = 1e-4,
                         bounds = NULL) {
 
   ## ---- Input checks
 
-  val <- validate_ipm_sensitivity(ipm, pars, kernels, delta, bounds)
+  val <- validate_ipm_sensitivity(ipm, pars, mega_mat, delta, bounds)
 
   ipm      <- val$ipm
   pars     <- val$pars
   pars_all <- val$pars_all
-  kernels  <- val$kernels
+  mega_mat <- val$mega_mat
   delta    <- val$delta
   bounds   <- val$bounds
 
@@ -111,7 +122,7 @@ sensitivity <- function(ipm, pars = NULL, kernels, delta = 1e-4,
   spar        <- numeric(npar)
   diff_method <- character(npar)
 
-  kernel <- make_iter_kernel(ipm, mega_mat = kernels)
+  kernel <- make_iter_kernel(ipm, mega_mat = mega_mat)
 
   if (!is.list(kernel) || is.null(kernel[[1]])) {
     stop("Kernel construction failed.")
@@ -128,7 +139,7 @@ sensitivity <- function(ipm, pars = NULL, kernels, delta = 1e-4,
     parameters(ipm_tmp) <- vpar
     ker <- ipm_tmp %>%
       make_ipm(iterate = FALSE) %>%
-      make_iter_kernel(mega_mat = kernels)
+      make_iter_kernel(mega_mat = mega_mat)
     dominant_eigen(ker[[1]])
   }
 

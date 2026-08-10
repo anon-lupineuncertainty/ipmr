@@ -167,7 +167,7 @@ warn_boundary_crossing <- function(par_names,
 #' Returns usable objects for the sensitivity function.
 #'
 #' @noRd
-validate_ipm_sensitivity <- function(ipm, pars, kernels, delta, bounds) {
+validate_ipm_sensitivity <- function(ipm, pars, mega_mat, delta, bounds) {
 
   base <- validate_ipm_base(ipm)
 
@@ -201,47 +201,27 @@ validate_ipm_sensitivity <- function(ipm, pars, kernels, delta, bounds) {
     warning("Zero-valued parameters detected; elasticity may be undefined.")
   }
 
-  ## ---- kernels
+  ## ---- mega_mat
+  is_simple <- grepl("simple", class(ipm)[1])
 
-  if (missing(kernels) || is.null(kernels)) {
-    stop("`kernels` must be provided.")
-  }
+  if (is_simple) {
 
-  if (!is.character(kernels) || length(kernels) == 0) {
-    stop("`kernels` must be a non-empty character vector.")
-  }
+    # mega_mat may be NULL for simple IPMs
+    if (!is.null(mega_mat) &&
+        (!is.character(mega_mat) || length(mega_mat) == 0)) {
+      stop("`mega_mat` must be a non-empty character vector or string, or NULL.")
+    }
 
-  # Check for duplicates
-  dup_kerns <- unique(kernels[duplicated(kernels)])
+  } else {
 
-  if (length(dup_kerns) > 0) {
-    warning(
-      "Duplicate kernel name(s) detected in `kernels`: ",
-      paste(dup_kerns, collapse = ", "),
-      ". This may lead to incorrect kernel construction if not intentional."
-    )
-  }
+    # General IPMs require an explicitly specified mega_mat
+    if (is.null(mega_mat)) {
+      stop("`mega_mat` must be provided for general IPMs.")
+    }
 
-  available_kernels <- names(ipm$sub_kernels)
-
-  if (!all(kernels %in% available_kernels)) {
-    bad <- setdiff(kernels, available_kernels)
-    stop(
-      "Unknown kernel name(s): ",
-      paste(bad, collapse = ", "),
-      ". Available kernels are: ",
-      paste(available_kernels, collapse = ", ")
-    )
-  }
-
-  n_expected <- length(ipm$sub_kernels)
-
-  if (length(kernels) != n_expected) {
-    warning(
-      "`kernels` has length ", length(kernels),
-      " but IPM contains ", n_expected, " subkernels. ",
-      "Ensure kernels are provided in correct row-major order."
-    )
+    if (!is.character(mega_mat) || length(mega_mat) == 0) {
+      stop("`mega_mat` must be a non-empty character vector or string.")
+    }
   }
 
   ## ---- delta
@@ -388,12 +368,12 @@ validate_ipm_sensitivity <- function(ipm, pars, kernels, delta, bounds) {
 
   ## return cleaned objects for main function
   list(
-    ipm      = ipm,
-    pars     = pars,
-    pars_all = pars_all,
-    kernels  = kernels,
-    delta    = delta,
-    bounds   = bounds
+    ipm       = ipm,
+    pars      = pars,
+    pars_all  = pars_all,
+    mega_mat  = mega_mat,
+    delta     = delta,
+    bounds    = bounds
   )
 }
 
@@ -427,7 +407,7 @@ new_ipmr_uncertainty <- function(ipm, lambdas, mod_uncert, params_uncert, vr_unc
 #'
 #'
 #' @noRd
-validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
+validate_ipm_uncertainty <- function(ipm, pars, samples, mega_mat, vr_table,
                                      delta, bounds, cores) {
 
   base <- validate_ipm_base(ipm)
@@ -469,46 +449,27 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
             paste(extra_in_samples, collapse = ", "))
   }
 
-  ## ---- kernels
-  if (missing(kernels) || is.null(kernels)) {
-    stop("`kernels` must be provided.")
-  }
+  ## ---- mega_mat
+  is_simple <- grepl("simple", class(ipm)[1])
 
-  if (!is.character(kernels) || length(kernels) == 0) {
-    stop("`kernels` must be a non-empty character vector.")
-  }
+  if (is_simple) {
 
-  # Check for duplicates
-  dup_kerns <- unique(kernels[duplicated(kernels)])
+    # mega_mat may be NULL for simple IPMs
+    if (!is.null(mega_mat) &&
+        (!is.character(mega_mat) || length(mega_mat) == 0)) {
+      stop("`mega_mat` must be a non-empty character vector or string, or NULL.")
+    }
 
-  if (length(dup_kerns) > 0) {
-    warning(
-      "Duplicate kernel name(s) detected in `kernels`: ",
-      paste(dup_kerns, collapse = ", "),
-      ". This may lead to incorrect kernel construction if not intentional."
-    )
-  }
+  } else {
 
-  available_kernels <- names(ipm$sub_kernels)
+    # General IPMs require an explicitly specified mega_mat
+    if (is.null(mega_mat)) {
+      stop("`mega_mat` must be provided for general IPMs.")
+    }
 
-  if (!all(kernels %in% available_kernels)) {
-    bad <- setdiff(kernels, available_kernels)
-    stop(
-      "Unknown kernel name(s): ",
-      paste(bad, collapse = ", "),
-      ". Available kernels are: ",
-      paste(available_kernels, collapse = ", ")
-    )
-  }
-
-  n_expected <- length(ipm$sub_kernels)
-
-  if (length(kernels) != n_expected) {
-    warning(
-      "`kernels` has length ", length(kernels),
-      " but IPM contains ", n_expected, " subkernels. ",
-      "Ensure kernels are provided in correct row-major order."
-    )
+    if (!is.character(mega_mat) || length(mega_mat) == 0) {
+      stop("`mega_mat` must be a non-empty character vector or string.")
+    }
   }
 
   ## ---- vr_table
@@ -717,7 +678,7 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, kernels, vr_table,
     ipm      = ipm,
     pars     = pars,
     samples  = samples,
-    kernels  = kernels,
+    mega_mat = mega_mat,
     vr_table = vr_table,
     delta    = delta,
     bounds   = bounds,

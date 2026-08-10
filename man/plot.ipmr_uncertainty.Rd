@@ -7,14 +7,14 @@
 \method{plot}{ipmr_uncertainty}(x, type = c("all", "param", "vr", "stacked"), vr_colors = NULL, ...)
 }
 \arguments{
-\item{x}{An object of class `ipmr_uncertainty`}
+\item{x}{An object of class \code{ipmr_uncertainty}}
 
 \item{type}{Type of plot:
 \itemize{
-  \item "param" - parameter-level 3-panel plot
-  \item "vr" - vital-rate aggregated contributions
-  \item "stacked" - stacked contributions vs lambda variance
-  \item "all" - returns all plots as a list
+\item "param" - parameter-level 3-panel plot
+\item "vr" - vital-rate aggregated contributions
+\item "stacked" - stacked contributions vs lambda variance
+\item "all" - returns all plots as a list
 }}
 
 \item{vr_colors}{A named character vector of colors used to represent

@@ -221,7 +221,7 @@ test_that("plot.ipmr_uncertainty runs", {
     vital_rate = rep("test", length(parameters(ipm)))
   )
 
-  res <- uncertainty(ipm, samples = samples, kernels = c("P", "F"), vr_table = vr)
+  res <- uncertainty(ipm, samples = samples, mega_mat = c("P", "F"), vr_table = vr)
 
   expect_s3_class(plot(res, type = "param"), "ggplot")
   expect_s3_class(plot(res, type = "vr"), "ggplot")
@@ -244,7 +244,7 @@ test_that("plot type 'all' returns list", {
     vital_rate = rep("test", length(parameters(ipm)))
   )
 
-  res <- uncertainty(ipm, samples = samples, kernels = c("P", "F"), vr_table = vr)
+  res <- uncertainty(ipm, samples = samples, mega_mat = c("P", "F"), vr_table = vr)
 
   out <- plot(res, type = "all")
 
@@ -268,7 +268,7 @@ test_that("plot errors on unnamed vr_colors", {
     vital_rate = rep("test", length(parameters(ipm)))
   )
 
-  res <- uncertainty(ipm, samples = samples, kernels = c("P", "F"), vr_table = vr)
+  res <- uncertainty(ipm, samples = samples, mega_mat = c("P", "F"), vr_table = vr)
 
   expect_error(
     plot(res, vr_colors = c("red", "blue")),
@@ -292,7 +292,7 @@ test_that("plot errors on missing vr_colors entries", {
     vital_rate = rep("test", length(parameters(ipm)))
   )
 
-  res <- uncertainty(ipm, samples = samples, kernels = c("P", "F"), vr_table = vr)
+  res <- uncertainty(ipm, samples = samples, mega_mat = c("P", "F"), vr_table = vr)
 
   expect_error(
     plot(res, vr_colors = c(foo = "red")),
@@ -316,7 +316,7 @@ test_that("print.ipmr_uncertainty runs", {
     vital_rate = rep("test", length(parameters(ipm)))
   )
 
-  res <- uncertainty(ipm, samples = samples, kernels = c("P", "F"), vr_table = vr)
+  res <- uncertainty(ipm, samples = samples, mega_mat = c("P", "F"), vr_table = vr)
 
   expect_invisible(print(res))
 })

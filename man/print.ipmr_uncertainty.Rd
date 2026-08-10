@@ -7,7 +7,7 @@
 \method{print}{ipmr_uncertainty}(x, ...)
 }
 \arguments{
-\item{x}{An object of class `ipmr_uncertainty`}
+\item{x}{An object of class \code{ipmr_uncertainty}}
 
 \item{...}{Unused}
 }

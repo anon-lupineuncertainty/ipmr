@@ -225,7 +225,7 @@ ker <- c("P", "F")
 test_that("uncertainty errors on missing IPM", {
 
   expect_error(
-    uncertainty(pars = NULL, samples = NULL, kernels = NULL, vr_table = NULL),
+    uncertainty(pars = NULL, samples = NULL, mega_mat = NULL, vr_table = NULL),
     "`ipm` must be provided"
   )
 })
@@ -233,7 +233,7 @@ test_that("uncertainty errors on missing IPM", {
 test_that("uncertainty rejects non-list IPM", {
 
   expect_error(
-    uncertainty(ipm = 5, samples = data.frame(), kernels = NULL, vr_table = NULL),
+    uncertainty(ipm = 5, samples = data.frame(), mega_mat = NULL, vr_table = NULL),
     "valid ipmr object"
   )
 })
@@ -243,7 +243,7 @@ test_that("uncertainty rejects DD IPMs", {
   ipm <- make_test_ipm("simple_dd_det")
 
   expect_error(
-    uncertainty(ipm, samples = data.frame(), kernels = c("P","F"), vr_table = NULL),
+    uncertainty(ipm, samples = data.frame(), mega_mat = c("P","F"), vr_table = NULL),
     "density-independent"
   )
 })
@@ -253,7 +253,7 @@ test_that("uncertainty rejects stochastic IPMs", {
   ipm <- make_test_ipm("simple_di_stoch")
 
   expect_error(
-    uncertainty(ipm, samples = data.frame(), kernels = c("P","F"), vr_table = NULL),
+    uncertainty(ipm, samples = data.frame(), mega_mat = c("P","F"), vr_table = NULL),
     "deterministic"
   )
 })
@@ -270,7 +270,7 @@ test_that("uncertainty returns correct structure", {
   res <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P","F"),
+    mega_mat = c("P","F"),
     vr_table = vr
   )
 
@@ -293,7 +293,7 @@ test_that("uncertainty respects parameter subset", {
     ipm,
     pars = c("s_int", "g_int"),
     samples = samples,
-    kernels = c("P","F"),
+    mega_mat = c("P","F"),
     vr_table = vr
   )
 
@@ -312,7 +312,7 @@ test_that("uncertainty rejects non-list bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       vr_table = vr,
       bounds = c(0, 1)
     ),
@@ -332,7 +332,7 @@ test_that("uncertainty rejects unnamed bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(c(0, 1)),
       vr_table = vr
     ),
@@ -352,7 +352,7 @@ test_that("uncertainty rejects unknown parameter names in bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         fake_parameter = c(0, 1)
       ),
@@ -374,7 +374,7 @@ test_that("uncertainty rejects bounds of incorrect length 1", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(0)
       ),
@@ -396,7 +396,7 @@ test_that("uncertainty rejects bounds of incorrect length 3", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(0, 1, 2)
       ),
@@ -418,7 +418,7 @@ test_that("uncertainty rejects non-numeric bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c("a", "b")
       ),
@@ -440,7 +440,7 @@ test_that("uncertainty rejects missing values in bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(NA, 1)
       ),
@@ -462,7 +462,7 @@ test_that("uncertainty rejects reversed bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(1, 0)
       ),
@@ -484,7 +484,7 @@ test_that("uncertainty rejects parameter values outside supplied bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(10, 20)
       ),
@@ -507,7 +507,7 @@ test_that("uncertainty accepts infinite bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       bounds = list(
         s_int = c(-Inf, Inf),
         f_s_int = c(0, Inf)
@@ -533,7 +533,7 @@ test_that("uncertainty warns when delta exceeds feasible region", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       delta = 5,
       bounds = list(
         s_int = c(pars$s_int - 1,
@@ -560,7 +560,7 @@ test_that("uncertainty returns difference method", {
   res <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     vr_table = vr
   )
 
@@ -585,7 +585,7 @@ test_that("uncertainty records forward differences for bounded parameters", {
   res <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     vr_table = vr,
     bounds = list(s_int = c(pars$s_int, Inf))
   )
@@ -617,7 +617,7 @@ test_that("uncertainty records backward differences for bounded parameters", {
   res <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     vr_table = vr,
     bounds = list(s_int = c(-Inf, pars$s_int))
   )
@@ -648,7 +648,7 @@ test_that("uncertainty records mixed difference methods", {
   res <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     vr_table = vr,
     bounds = list(
       s_int = c(pars$s_int, Inf)
@@ -682,7 +682,7 @@ test_that("uncertainty errors when delta exceeds feasible interval", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       vr_table = vr,
       delta = 1,
       bounds = list(
@@ -723,7 +723,7 @@ test_that("uncertainty errors when sampled values cross parameter bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P","F"),
+      mega_mat = c("P","F"),
       vr_table = vr,
       delta = 0.1,
       bounds = list(
@@ -751,7 +751,7 @@ test_that("uncertainty rejects sampled values outside bounds", {
     uncertainty(
       ipm,
       samples = samples,
-      kernels = c("P", "F"),
+      mega_mat = c("P", "F"),
       vr_table = vr,
       bounds = list(
         s_int = c(pars$s_int, Inf)
@@ -802,7 +802,7 @@ test_that("uncertainty computes lambda variance", {
   res <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P","F"),
+    mega_mat = c("P","F"),
     vr_table = vr
   )
 
@@ -822,11 +822,11 @@ test_that("uncertainty sensitivities match sensitivity()", {
   unc <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P","F"),
+    mega_mat = c("P","F"),
     vr_table = vr
   )
 
-  sens <- sensitivity(ipm, kernels = c("P","F"))$sensitivity
+  sens <- sensitivity(ipm, mega_mat = c("P","F"))$sensitivity
 
   expect_equal(
     unname(unc$params_uncert$sensitivity),
@@ -853,14 +853,14 @@ test_that("bounded uncertainty sensitivities match bounded sensitivity()", {
   unc <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     vr_table = vr,
     bounds = bounds
   )
 
   sens <- sensitivity(
     ipm,
-    kernels = c("P", "F"),
+    mega_mat = c("P", "F"),
     bounds = bounds
   )
 
@@ -884,34 +884,9 @@ test_that("vr_table join works correctly", {
   res <- uncertainty(
     ipm,
     samples = samples,
-    kernels = c("P","F"),
+    mega_mat = c("P","F"),
     vr_table = vr
   )
 
   expect_true("vital_rate" %in% names(res$params_uncert))
-})
-
-test_that("uncertainty passes kernel warnings", {
-
-  ipm <- make_test_ipm("simple_di_det")
-
-  samples <- as.data.frame(matrix(
-    rep(unlist(parameters(ipm)), each = 3),
-    nrow = 3,
-    byrow = TRUE
-  ))
-  colnames(samples) <- names(parameters(ipm))
-
-  vr <- data.frame(
-    parameter = names(parameters(ipm)),
-    vital_rate = "test"
-  )
-
-  expect_warning(
-    uncertainty(ipm,
-                samples = samples,
-                kernels = c("P", "P"),
-                vr_table = vr),
-    "Duplicate kernel name"
-  )
 })
