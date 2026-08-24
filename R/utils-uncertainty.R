@@ -711,25 +711,26 @@ validate_ipm_uncertainty <- function(ipm, pars, samples, mega_mat, vr_table,
 
   title_wrap <- function(x) stringr::str_wrap(x, width = 28)
 
-  p1 <- ggplot2::ggplot(df, ggplot2::aes(x = .data$cv, y = .data$parameter,
+  p1 <- ggplot2::ggplot(df, ggplot2::aes(x = .data$variance, y = .data$parameter,
                                          color = .data$vital_rate)) +
     ggplot2::geom_vline(xintercept = 0) +
     ggplot2::geom_point(size = 2.5) +
-    ggplot2::geom_segment(ggplot2::aes(x = 0, xend = .data$cv,
+    ggplot2::geom_segment(ggplot2::aes(x = 0, xend = .data$variance,
                                        yend = .data$parameter), linewidth = 1) +
-    ggplot2::labs(x = "Coefficient of variation",
+    ggplot2::scale_x_sqrt() +
+    ggplot2::labs(x = "Variance",
                   y = "Parameter",
                   title = title_wrap("Parameter uncertainty")) +
     ggplot2::scale_color_manual(values = vr_colors, guide = "none") +
     base_theme
 
-  p2 <- ggplot2::ggplot(df, ggplot2::aes(x = .data$elasticity, y = .data$parameter,
+  p2 <- ggplot2::ggplot(df, ggplot2::aes(x = .data$sensitivity, y = .data$parameter,
                                          color = .data$vital_rate)) +
     ggplot2::geom_vline(xintercept = 0) +
     ggplot2::geom_point(size = 2.5) +
-    ggplot2::geom_segment(ggplot2::aes(x = 0, xend = .data$elasticity,
+    ggplot2::geom_segment(ggplot2::aes(x = 0, xend = .data$sensitivity,
                                        yend = .data$parameter), linewidth = 1) +
-    ggplot2::labs(x = "Elasticity",
+    ggplot2::labs(x = "Sensitivity",
                   y = NULL,
                   title = title_wrap("Model sensitivity to parameter")) +
     ggplot2::scale_color_manual(values = vr_colors, guide = "none") +

@@ -1,3 +1,15 @@
+# ipmr 0.0.8
+
+This release adds methods for quantifying how parameter uncertainty propagates through IPMs.
+
+## Features
+
+- Adds 'uncertainty()' to quantify the contribution of parameter uncertainty to variance in population growth rate ('lambda').
+
+- Adds 'sensitivity()' to calculate model sensitivity and elasticity to changes in parameter values.
+
+- Adds a new vignette demonstrating uncertainty analysis in 'ipmr'.
+
 # ipmr 0.0.7
 
 Fixes a test that was failing for `r-devel` on CRAN. There are no other changes.
