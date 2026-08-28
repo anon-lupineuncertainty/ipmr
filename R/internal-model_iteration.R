@@ -14,7 +14,8 @@
                                          pop_state,
                                          main_env,
                                          k_row,
-                                         normal) {
+                                         normal,
+                                         ...) {
 
   # For par_setarchical deterministic models, we need to create a determinstic
   # simulation for each level of the model
@@ -224,7 +225,8 @@
                                                 main_env,
                                                 k_row,
                                                 normal,
-                                                report_progress) {
+                                                report_progress,
+                                                ...) {
 
   if(rlang::is_quosure(pop_state)) {
     pop_state <- rlang::eval_tidy(pop_state)
@@ -341,7 +343,8 @@
                                                 pop_state,
                                                 main_env,
                                                 k_row,
-                                                normal) {
+                                                normal,
+                                                ...) {
 
   # Select kernels from kern_seq, or just use all of them if it's
   # a deterministic simulation. Similarly, we need to subset the k_rows
@@ -450,7 +453,8 @@
                                           iterations,
                                           pop_state,
                                           main_env,
-                                          normal)  {
+                                          normal,
+                                          ...)  {
 
 
   if(any(proto_ipm$uses_par_sets)) {
@@ -657,7 +661,8 @@
                                                  pop_state,
                                                  main_env,
                                                  normal,
-                                                 report_progress) {
+                                                 report_progress,
+                                                 ...) {
 
 
   for(i in seq_len(iterations)) {
@@ -773,7 +778,8 @@
                                                   kern_seq,
                                                   pop_state,
                                                   main_env,
-                                                  normal) {
+                                                  normal,
+                                                  ...) {
 
   # Select kernels from kern_seq, or just use all of them if it's
   # a deterministic simulation. Similarly, we need to subset the k_rows
@@ -886,7 +892,8 @@
                                          iterations,
                                          pop_state,
                                          main_env,
-                                         normal) {
+                                         normal,
+                                         ...) {
 
 
   i <- current_iteration
@@ -1088,7 +1095,8 @@
                                                 pop_state,
                                                 main_env,
                                                 normal,
-                                                report_progress) {
+                                                report_progress,
+                                                ...) {
 
 
   i <- current_iteration
@@ -1202,7 +1210,8 @@
                                                  pop_state,
                                                  main_env,
                                                  normal,
-                                                 report_progress) {
+                                                 report_progress,
+                                                 ...) {
 
 
   # Select kernels from kern_seq, or just use all of them if it's
@@ -1315,7 +1324,8 @@
                                           iterations,
                                           pop_state,
                                           main_env,
-                                          normal) {
+                                          normal,
+                                          ...) {
 
 
   i <- current_iteration
@@ -1515,7 +1525,8 @@
                                                  pop_state,
                                                  main_env,
                                                  normal,
-                                                 report_progress) {
+                                                 report_progress,
+                                                 ...) {
 
 
   i <- current_iteration
@@ -1630,7 +1641,8 @@
                                                  pop_state,
                                                  main_env,
                                                  normal,
-                                                 report_progress) {
+                                                 report_progress,
+                                                 ...) {
 
 
   # Select kernels from kern_seq, or just use all of them if it's

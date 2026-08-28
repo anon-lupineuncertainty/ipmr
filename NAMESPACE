@@ -13,6 +13,8 @@ S3method(format_mega_kernel,default)
 S3method(int_mesh,ipmr_ipm)
 S3method(ipm_to_df,array)
 S3method(ipm_to_df,default)
+S3method(ipmr::prod,age_size_expr)
+S3method(ipmr::sum,age_size_expr)
 S3method(is_conv_to_asymptotic,ipmr_ipm)
 S3method(kernel_formulae,default)
 S3method(kernel_formulae,proto_ipm)
@@ -142,60 +144,74 @@ export(truncated_distributions)
 export(use_vr_model)
 export(vital_rate_exprs)
 export(vital_rate_funs)
-importFrom(Rcpp,evalCpp)
-importFrom(Rcpp,sourceCpp)
-importFrom(grDevices,grey)
-importFrom(grDevices,rainbow)
-importFrom(graphics,abline)
-importFrom(graphics,axis)
-importFrom(graphics,contour)
-importFrom(graphics,image)
-importFrom(graphics,layout)
-importFrom(graphics,par)
+importFrom(Rcpp,
+  evalCpp,
+  sourceCpp
+)
+importFrom(grDevices,
+  grey,
+  rainbow
+)
+importFrom(graphics,
+  abline,
+  axis,
+  contour,
+  image,
+  layout,
+  par
+)
 importFrom(magrittr,"%>%")
 importFrom(methods,hasArg)
-importFrom(purrr,flatten)
-importFrom(purrr,map)
-importFrom(purrr,map2)
-importFrom(purrr,map_chr)
-importFrom(purrr,map_dbl)
-importFrom(rlang,":=")
-importFrom(rlang,.data)
-importFrom(rlang,as_environment)
-importFrom(rlang,call_args)
-importFrom(rlang,caller_env)
-importFrom(rlang,child_env)
-importFrom(rlang,empty_env)
-importFrom(rlang,enexpr)
-importFrom(rlang,enexprs)
-importFrom(rlang,enquo)
-importFrom(rlang,enquos)
-importFrom(rlang,ensym)
-importFrom(rlang,ensyms)
-importFrom(rlang,env_names)
-importFrom(rlang,env_parents)
-importFrom(rlang,eval_bare)
-importFrom(rlang,expr)
-importFrom(rlang,expr_text)
-importFrom(rlang,exprs)
-importFrom(rlang,is_empty)
-importFrom(rlang,is_quosure)
-importFrom(rlang,list2)
-importFrom(rlang,new_function)
-importFrom(rlang,parse_expr)
-importFrom(rlang,parse_exprs)
-importFrom(rlang,quo)
-importFrom(rlang,quo_is_null)
-importFrom(rlang,quo_name)
-importFrom(rlang,quo_text)
-importFrom(rlang,quos)
-importFrom(rlang,sym)
-importFrom(rlang,syms)
-importFrom(stats,bw.nrd0)
-importFrom(stats,dnorm)
-importFrom(stats,na.omit)
-importFrom(stats,runif)
-importFrom(stats,setNames)
-importFrom(utils,globalVariables)
-importFrom(utils,packageDescription)
+importFrom(purrr,
+  flatten,
+  map,
+  map2,
+  map_chr,
+  map_dbl
+)
+importFrom(rlang,
+  ":=",
+  .data,
+  as_environment,
+  call_args,
+  caller_env,
+  child_env,
+  empty_env,
+  enexpr,
+  enexprs,
+  enquo,
+  enquos,
+  ensym,
+  ensyms,
+  env_names,
+  env_parents,
+  eval_bare,
+  expr,
+  expr_text,
+  exprs,
+  is_empty,
+  is_quosure,
+  list2,
+  new_function,
+  parse_expr,
+  parse_exprs,
+  quo,
+  quo_is_null,
+  quo_name,
+  quo_text,
+  quos,
+  sym,
+  syms
+)
+importFrom(stats,
+  bw.nrd0,
+  dnorm,
+  na.omit,
+  runif,
+  setNames
+)
+importFrom(utils,
+  globalVariables,
+  packageDescription
+)
 useDynLib(ipmr, .registration=TRUE)

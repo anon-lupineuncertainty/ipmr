@@ -1,4 +1,5 @@
 #' @noRd
+#' @exportS3Method ipmr::sum
 
 sum.age_size_expr <- function(expr, ..., na.rm = NA){
 
@@ -8,6 +9,7 @@ sum.age_size_expr <- function(expr, ..., na.rm = NA){
 }
 
 #' @noRd
+#' @exportS3Method ipmr::prod
 
 prod.age_size_expr <- function(expr, ..., na.rm = NA){
 

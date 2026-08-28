@@ -54,7 +54,7 @@
 #'
 #' @importFrom purrr map_chr map
 #' @importFrom rlang := list2 enquo enquos parse_expr parse_exprs quo_text
-#' quo_is_null is_quosure
+#'    quo_is_null is_quosure
 #' @importFrom methods hasArg
 #'
 #' @export

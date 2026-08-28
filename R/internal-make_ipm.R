@@ -1091,7 +1091,7 @@
 # Returns a list with entries others and k_row with par_sets split out
 # Checks ipm definition
 
-.initialize_kernels.default <- function(proto_ipm, iterate, iter_dir) {
+.initialize_kernels.default <- function(proto_ipm, iterate, iter_dir, ...) {
 
   # checks pop_state, env_state, domain definitions
   .check_ipm_definition(proto_ipm, iterate)
@@ -1132,7 +1132,7 @@
 
 #' @noRd
 
-.initialize_kernels.age_x_size <- function(proto_ipm, iterate, iter_dir) {
+.initialize_kernels.age_x_size <- function(proto_ipm, iterate, iter_dir, ...) {
 
   # checks pop_state, env_state, domain definitions
   .check_ipm_definition(proto_ipm, iterate)

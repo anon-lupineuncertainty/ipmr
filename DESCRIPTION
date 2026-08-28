@@ -71,10 +71,10 @@ Imports:
     utils,
     Rcpp
 Depends: R (>= 3.4)
-RoxygenNote: 7.2.2
 Config/testthat/parallel: true
 Config/testthat/edition: 3
 LinkingTo: 
     Rcpp
 URL: https://padrinoDB.github.io/ipmr/, https://github.com/padrinoDB/ipmr
 BugReports: https://github.com/padrinoDB/ipmr/issues
+Config/roxygen2/version: 8.1.0
