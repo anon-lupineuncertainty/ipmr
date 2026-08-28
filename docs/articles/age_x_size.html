@@ -110,7 +110,7 @@
     
 <div class="section level2">
 <h2 id="introduction-to-age-times-size-classified-models">Introduction to age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
 size classified models<a class="anchor" aria-label="anchor" href="#introduction-to-age-times-size-classified-models"></a>
 </h2>
 <p>Many species exhibit age-dependent demography in addition to some
@@ -120,7 +120,7 @@ exceptionally insightful when available. <code>ipmr</code> includes some
 methods to deal with specifying them.</p>
 <p>While we may be tempted to think of age as a continuous quantity, it
 must be a discrete state in a discrete time model. This makes the age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
 size IPM a special case of the general IPM. This also uses the parameter
 index syntax, and it is largely the same as for other, non-age
 structured IPMs, but includes a couple extra bits that must be
@@ -137,15 +137,15 @@ Childs, &amp; Rees (2016).</p>
 <h2 id="mathematical-overview">Mathematical overview<a class="anchor" aria-label="anchor" href="#mathematical-overview"></a>
 </h2>
 <p>The deterministic form of an age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
 size model is generally:</p>
 <ol style="list-style-type: decimal">
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>a</mi><mo>=</mo><mn>0</mn></mrow><mi>M</mi></munderover><msubsup><mo>∫</mo><mi>L</mi><mi>U</mi></msubsup><msub><mi>F</mi><mi>a</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>n</mi><mi>a</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>d</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">n_0(z',t+1) = \sum\limits_{a=0}^M \int_L^UF_a(z',z)n_a(z,t)dz</annotation></semantics></math></li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mn>0</mn></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munderover><mo>∑</mo><mrow><mi>a</mi><mo>=</mo><mn>0</mn></mrow><mi>M</mi></munderover><msubsup><mo>∫</mo><mi>L</mi><mi>U</mi></msubsup><msub><mi>F</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>n</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mi>d</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">n_0(z',t+1) = \sum\limits_{a=0}^M \int_L^UF_a(z',z)n_a(z,t)dz</annotation></semantics></math></li>
 </ol>
 <p>and</p>
 <ol start="2" style="list-style-type: decimal">
 <li>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>a</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msubsup><mo>∫</mo><mi>L</mi><mi>U</mi></msubsup><msub><mi>P</mi><mrow><mi>a</mi><mo>−</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>n</mi><mrow><mi>a</mi><mo>−</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>d</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">n_a(z',t+1) = \int_L^U P_{a-1}(z',z)n_{a-1}(z,t)dz</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msubsup><mo>∫</mo><mi>L</mi><mi>U</mi></msubsup><msub><mi>P</mi><mrow><mi>a</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>n</mi><mrow><mi>a</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mi>d</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">n_a(z',t+1) = \int_L^U P_{a-1}(z',z)n_{a-1}(z,t)dz</annotation></semantics></math>
 for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><mi>M</mi></mrow><annotation encoding="application/x-tex">a = 1,2,...,M</annotation></semantics></math>
 </li>
@@ -157,7 +157,7 @@ a third equation to specify the number of individuals in the
 “<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">M+1</annotation></semantics></math>
 or older” age class:</p>
 <ol start="3" style="list-style-type: decimal">
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mrow><mi>M</mi><mo>+</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msubsup><mo>∫</mo><mi>L</mi><mi>U</mi></msubsup><mrow><mo stretchy="true" form="prefix">[</mo><msub><mi>P</mi><mi>M</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>n</mi><mi>M</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>P</mi><mrow><mi>M</mi><mo>+</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>n</mi><mrow><mi>M</mi><mo>+</mo><mn>1</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mi>d</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">n_{M+1}(z',t+1) = \int_L^U[P_M(z',z)n_M(z,t) + P_{M+1}(z',z)n_{M+1}(z,t)]dz</annotation></semantics></math></li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mrow><mi>M</mi><mo>+</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>t</mi><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msubsup><mo>∫</mo><mi>L</mi><mi>U</mi></msubsup><mo stretchy="false" form="prefix">[</mo><msub><mi>P</mi><mi>M</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>n</mi><mi>M</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msub><mi>P</mi><mrow><mi>M</mi><mo>+</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><msub><mi>n</mi><mrow><mi>M</mi><mo>+</mo><mn>1</mn></mrow></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">]</mo><mi>d</mi><mi>z</mi></mrow><annotation encoding="application/x-tex">n_{M+1}(z',t+1) = \int_L^U[P_M(z',z)n_M(z,t) + P_{M+1}(z',z)n_{M+1}(z,t)]dz</annotation></semantics></math></li>
 </ol>
 <p>If we do this, then the upper limit in the sum of Eq 1 must be
 modified to include
@@ -169,23 +169,23 @@ age group.</p>
 for:</p>
 <ul>
 <li><p>survival
-(<code>s_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">s(z,a)</annotation></semantics></math>)</p></li>
+(<code>s_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">s(z,a)</annotation></semantics></math>)</p></li>
 <li><p>growth
-(<code>g_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">G(z',z,a)</annotation></semantics></math>)</p></li>
+(<code>g_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">G(z',z,a)</annotation></semantics></math>)</p></li>
 <li><p>probability of adults reproducing
-(<code>pb_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>b</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p_b(z,a)</annotation></semantics></math>)</p></li>
+(<code>pb_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>b</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p_b(z,a)</annotation></semantics></math>)</p></li>
 <li><p>probability that a recruit survives to the first census
-(<code>pr_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>r</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p_r(a)</annotation></semantics></math>)</p></li>
+(<code>pr_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p_r(a)</annotation></semantics></math>)</p></li>
 <li><p>recruit size distribution
-(<code>rcsz</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>d</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">C_d(z',z)</annotation></semantics></math>).
+(<code>rcsz</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>d</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">C_d(z',z)</annotation></semantics></math>).
 The recruit size distribution has a maternal effect of parental weight
 on recruit weight.</p></li>
 </ul>
 <p>The sub-kernels have the following form:</p>
 <ol start="4" style="list-style-type: decimal">
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>a</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>s</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>*</mo><mi>G</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P_a(z', z, a) = s(z, a) * G(z', z, a)</annotation></semantics></math></p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>*</mo><mi>G</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">P_a(z', z, a) = s(z, a) * G(z', z, a)</annotation></semantics></math></p></li>
 <li>
-<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mi>a</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>s</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>*</mo><msub><mi>p</mi><mi>b</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>*</mo><msub><mi>p</mi><mi>r</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>*</mo><msub><mi>C</mi><mi>d</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>*</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">F_a(z', z, a) = s(z, a) * p_b(z, a) * p_r(a) * C_d(z', z) * 0.5</annotation></semantics></math></p>
+<p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mi>a</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>*</mo><msub><mi>p</mi><mi>b</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>*</mo><msub><mi>p</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>*</mo><msub><mi>C</mi><mi>d</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>*</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">F_a(z', z, a) = s(z, a) * p_b(z, a) * p_r(a) * C_d(z', z) * 0.5</annotation></semantics></math></p>
 <ul>
 <li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mn>0</mn></msub><mo>≡</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">F_0 \equiv 0</annotation></semantics></math>
 so that age-0 recruits cannot reproduce.</p></li>
@@ -199,18 +199,18 @@ based on observed data.</p></li>
 <ol start="6" style="list-style-type: decimal">
 <li>
 <p>Survival
-(<code>s_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">s(z,a)</annotation></semantics></math>):
+(<code>s_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">s(z,a)</annotation></semantics></math>):
 A logistic regression with size and age as fixed effects.</p>
 <ul>
 <li><p>Example code:
 <code>glm(surv ~ size + age, data = survival_data, family = binomial())</code></p></li>
 <li><p>Mathematical form:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>α</mi><mi>s</mi></msub><mo>+</mo><msubsup><mi>β</mi><mi>s</mi><mi>z</mi></msubsup><mo>*</mo><mi>z</mi><mo>+</mo><msubsup><mi>β</mi><mi>s</mi><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">Logit(s(z,a)) = \alpha_s + \beta_s^z * z + \beta_s^a *age</annotation></semantics></math></p></li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mo stretchy="false" form="prefix">(</mo><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>α</mi><mi>s</mi></msub><mo>+</mo><msubsup><mi>β</mi><mi>s</mi><mi>z</mi></msubsup><mo>*</mo><mi>z</mi><mo>+</mo><msubsup><mi>β</mi><mi>s</mi><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">Logit(s(z,a)) = \alpha_s + \beta_s^z * z + \beta_s^a *age</annotation></semantics></math></p></li>
 </ul>
 </li>
 <li>
 <p>Growth
-(<code>g_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">G(z',z,a)</annotation></semantics></math>):
+(<code>g_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">G(z',z,a)</annotation></semantics></math>):
 A linear model with size and age as fixed effects.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><mi>G</mi></msub><annotation encoding="application/x-tex">f_G</annotation></semantics></math>
 denotes a normal probability density function.</p>
@@ -220,37 +220,37 @@ denotes a normal probability density function.</p>
 <li>
 <p>Mathematical form:</p>
 <ul>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>f</mi><mi>G</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><mi>G</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>σ</mi><mi>G</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">G(z',z,a) = f_G(\mu_G(z, a), \sigma_G)</annotation></semantics></math></p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>G</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>α</mi><mi>G</mi></msub><mo>+</mo><msubsup><mi>β</mi><mi>G</mi><mi>z</mi></msubsup><mo>*</mo><mi>z</mi><mo>+</mo><msubsup><mi>β</mi><mi>G</mi><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">\mu_G(z, a) = \alpha_G + \beta_G^z * z + \beta_G^a * age</annotation></semantics></math></p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>f</mi><mi>G</mi></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><mi>G</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>σ</mi><mi>G</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">G(z',z,a) = f_G(\mu_G(z, a), \sigma_G)</annotation></semantics></math></p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><mi>G</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>α</mi><mi>G</mi></msub><mo>+</mo><msubsup><mi>β</mi><mi>G</mi><mi>z</mi></msubsup><mo>*</mo><mi>z</mi><mo>+</mo><msubsup><mi>β</mi><mi>G</mi><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">\mu_G(z, a) = \alpha_G + \beta_G^z * z + \beta_G^a * age</annotation></semantics></math></p></li>
 </ul>
 </li>
 </ul>
 </li>
 <li>
 <p>Probability of reproduction
-(<code>pb_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>b</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p_b(z,a)</annotation></semantics></math>):
+(<code>pb_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>b</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p_b(z,a)</annotation></semantics></math>):
 A logistic regression with size and age as fixed effects.</p>
 <ul>
 <li><p>Example code:
 <code>glm(repr ~ size + age, data = repr_data, family = binomial())</code></p></li>
 <li><p>Mathematical form:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mi>b</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>α</mi><msub><mi>p</mi><mi>b</mi></msub></msub><mo>+</mo><msubsup><mi>β</mi><msub><mi>p</mi><mi>b</mi></msub><mi>z</mi></msubsup><mo>*</mo><mi>z</mi><mo>+</mo><msubsup><mi>β</mi><msub><mi>p</mi><mi>b</mi></msub><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Logit(p_b(z,a)) = \alpha_{p_b} + \beta_{p_b}^z * z + \beta_{p_b}^a * age)</annotation></semantics></math></p></li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>b</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo>,</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>α</mi><msub><mi>p</mi><mi>b</mi></msub></msub><mo>+</mo><msubsup><mi>β</mi><msub><mi>p</mi><mi>b</mi></msub><mi>z</mi></msubsup><mo>*</mo><mi>z</mi><mo>+</mo><msubsup><mi>β</mi><msub><mi>p</mi><mi>b</mi></msub><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Logit(p_b(z,a)) = \alpha_{p_b} + \beta_{p_b}^z * z + \beta_{p_b}^a * age)</annotation></semantics></math></p></li>
 </ul>
 </li>
 <li>
 <p>Probability of recruitment
-(<code>pr_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>r</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p_r(a)</annotation></semantics></math>):
+(<code>pr_age</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p_r(a)</annotation></semantics></math>):
 A logistic regression with age as a fixed effect.</p>
 <ul>
 <li><p>Example code:
 <code>glm(recr ~ age, data = recr_data, family = binomial())</code></p></li>
 <li><p>Mathematical form:
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mi>r</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>α</mi><msub><mi>p</mi><mi>r</mi></msub></msub><mo>+</mo><msubsup><mi>β</mi><msub><mi>p</mi><mi>r</mi></msub><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">Logit(p_r(a)) = \alpha_{p_r} + \beta_{p_r}^a * age</annotation></semantics></math></p></li>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi>o</mi><mi>g</mi><mi>i</mi><mi>t</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>p</mi><mi>r</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>a</mi><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>α</mi><msub><mi>p</mi><mi>r</mi></msub></msub><mo>+</mo><msubsup><mi>β</mi><msub><mi>p</mi><mi>r</mi></msub><mi>a</mi></msubsup><mo>*</mo><mi>a</mi><mi>g</mi><mi>e</mi></mrow><annotation encoding="application/x-tex">Logit(p_r(a)) = \alpha_{p_r} + \beta_{p_r}^a * age</annotation></semantics></math></p></li>
 </ul>
 </li>
 <li>
 <p>Recruit size distribution
-(<code>rcsz</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>d</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">C_d(z',z)</annotation></semantics></math>):
+(<code>rcsz</code>/<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>d</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">C_d(z',z)</annotation></semantics></math>):
 A linear model with parent size as a fixed effect.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>f</mi><msub><mi>C</mi><mi>d</mi></msub></msub><annotation encoding="application/x-tex">f_{C_d}</annotation></semantics></math>
 denotes a normal probability density function.</p>
@@ -260,8 +260,8 @@ denotes a normal probability density function.</p>
 <li>
 <p>Mathematical form:</p>
 <ul>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>d</mi></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mi>′</mi><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>f</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>μ</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><msub><mi>σ</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">C_d(z',z) = f_{C_d}(\mu_{C_d}(z), \sigma_{C_d})</annotation></semantics></math></p></li>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>α</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mo>+</mo><msubsup><mi>β</mi><msub><mi>C</mi><mi>d</mi></msub><mi>z</mi></msubsup><mo>*</mo><mi>z</mi></mrow><annotation encoding="application/x-tex">\mu_{C_d}(z) = \alpha_{C_d} + \beta_{C_d}^z * z</annotation></semantics></math></p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mi>d</mi></msub><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>′</mo></msup><mo>,</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>f</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mo stretchy="false" form="prefix">(</mo><msub><mi>μ</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>,</mo><msub><mi>σ</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">C_d(z',z) = f_{C_d}(\mu_{C_d}(z), \sigma_{C_d})</annotation></semantics></math></p></li>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>μ</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mo stretchy="false" form="prefix">(</mo><mi>z</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>α</mi><msub><mi>C</mi><mi>d</mi></msub></msub><mo>+</mo><msubsup><mi>β</mi><msub><mi>C</mi><mi>d</mi></msub><mi>z</mi></msubsup><mo>*</mo><mi>z</mi></mrow><annotation encoding="application/x-tex">\mu_{C_d}(z) = \alpha_{C_d} + \beta_{C_d}^z * z</annotation></semantics></math></p></li>
 </ul>
 </li>
 </ul>
@@ -437,7 +437,7 @@ because it’s a deterministic model)</p></li>
 <p>There are a number of other calculations that we can perform using
 functions provided by <code>ipmr</code>. <code><a href="../reference/eigenvectors.html">left_ev()</a></code> and
 <code>right_ev</code> also work for age
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>×</mi><annotation encoding="application/x-tex">\times</annotation></semantics></math>
 size models. We’ll extract them and plot their values.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">v_a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eigenvectors.html">left_ev</a></span><span class="op">(</span><span class="va">age_size_ipm</span>, iterations <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span>
@@ -484,7 +484,7 @@ size models. We’ll extract them and plot their values.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
       </footer>
